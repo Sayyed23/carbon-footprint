@@ -34,7 +34,7 @@ class AppTheme {
         error: highTerracotta,
       ),
       scaffoldBackgroundColor: backgroundLight,
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: cardLight,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -64,7 +64,7 @@ class AppTheme {
         error: highTerracotta,
       ),
       scaffoldBackgroundColor: backgroundDark,
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: cardDark,
         elevation: 0,
         shape: RoundedRectangleBorder(

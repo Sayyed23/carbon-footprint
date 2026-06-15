@@ -11,11 +11,11 @@ class _CoachScreenState extends State<CoachScreen> {
   final List<Map<String, dynamic>> _messages = [
     {
       'isUser': false,
-      'text': "Hello! I am your EcoTrace Gemini Coach 🤖. I have analyzed your last 7-day footprint summary:\n\n"
-          "• Transport emissions: 12.8 kg CO₂e (40% above target)\n"
-          "• Food: 6.4 kg CO₂e\n"
-          "• Energy: 8.2 kg CO₂e\n\n"
-          "Ask me anything, or try tapping one of the common prompts below!",
+      'text': 'Hello! I am your EcoTrace Gemini Coach 🤖. I have analyzed your last 7-day footprint summary:\n\n'
+          '• Transport emissions: 12.8 kg CO₂e (40% above target)\n'
+          '• Food: 6.4 kg CO₂e\n'
+          '• Energy: 8.2 kg CO₂e\n\n'
+          'Ask me anything, or try tapping one of the common prompts below!',
     }
   ];
 
@@ -52,7 +52,7 @@ class _CoachScreenState extends State<CoachScreen> {
     _scrollToBottom();
 
     // Mock Gemini API processing and stream simulation
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     if (!mounted) return;
 
@@ -88,7 +88,7 @@ class _CoachScreenState extends State<CoachScreen> {
     final words = response.split(' ');
     String currentText = '';
     for (int i = 0; i < words.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 40));
+      await Future<void>.delayed(const Duration(milliseconds: 40));
       if (!mounted) return;
       currentText += (i == 0 ? '' : ' ') + words[i];
       setState(() {

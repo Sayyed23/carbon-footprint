@@ -27,7 +27,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
       _isScanning = true;
     });
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
 
     if (!mounted) return;
     setState(() {
@@ -51,7 +51,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
       _isRecording = true;
     });
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
 
     if (!mounted) return;
     setState(() {
@@ -122,7 +122,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
   }
 
   void _showLoggedDialog({required String title, required String details}) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         final theme = Theme.of(context);
@@ -142,7 +142,6 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
   }
 
   Widget _buildForm() {
-    final theme = Theme.of(context);
     if (_selectedCategory == 'Transport') {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +149,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
           const Text('Select Vehicle Type', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _vehicleType,
+            initialValue: _vehicleType,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -179,7 +178,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
           const Text('Diet / Ingredient Type', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _foodType,
+            initialValue: _foodType,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -208,7 +207,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
           const Text('Utility Type', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _energyUnit,
+            initialValue: _energyUnit,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -234,7 +233,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.1),
+          color: Colors.grey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: const Center(
@@ -274,9 +273,9 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         decoration: BoxDecoration(
-                          color: theme.primaryColor.withOpacity(0.06),
+                          color: theme.primaryColor.withValues(alpha: 0.06),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: theme.primaryColor.withOpacity(0.2)),
+                          border: Border.all(color: theme.primaryColor.withValues(alpha: 0.2)),
                         ),
                         child: Column(
                           children: [
@@ -301,7 +300,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         decoration: BoxDecoration(
-                          color: _isRecording ? const Color(0xFFC15C3D).withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                          color: _isRecording ? const Color(0xFFC15C3D).withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: _isRecording ? const Color(0xFFC15C3D) : theme.dividerColor,
@@ -317,7 +316,7 @@ class _LogActivityScreenState extends State<LogActivityScreen> {
                               const SizedBox(height: 4),
                               const Text('Speak to log', style: TextStyle(fontSize: 11)),
                             ] else ...[
-                              Icon(Icons.mic, size: 36, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                              Icon(Icons.mic, size: 36, color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
                               const SizedBox(height: 8),
                               const Text('Hold Mic Button', style: TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 4),

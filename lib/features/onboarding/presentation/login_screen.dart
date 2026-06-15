@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     // Simulate network latency
-    await Future.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     if (!mounted) return;
 
@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         leading: _otpSent
             ? IconButton(
-                icon: Icon(Icons.arrow_back, color: theme.colorScheme.onBackground),
+                icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
                 onPressed: () => setState(() => _otpSent = false),
               )
             : null,
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 _otpSent ? 'Verify Phone Number' : 'Join the Green Footprint Movement',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  color: theme.colorScheme.onBackground.withOpacity(0.8),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 48),

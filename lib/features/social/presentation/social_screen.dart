@@ -60,14 +60,14 @@ class SocialScreen extends StatelessWidget {
                           '580 EcoPoints',
                           style: theme.textTheme.headlineMedium?.copyWith(
                             color: Colors.white,
-                            fontWeight: FontWeight.black,
-                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
                           ),
                         ),
                         const SizedBox(height: 8),
                         const Text(
                           'Ranked #3 in Pune (Tier 2 Cohort)',
-                          style: TextStyle(color: Colors.white90, fontSize: 13),
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
                       ],
                     ),
@@ -188,7 +188,7 @@ class SocialScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: isMe
-                          ? theme.primaryColor.withOpacity(0.08)
+                          ? theme.primaryColor.withValues(alpha: 0.08)
                           : theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
@@ -264,7 +264,7 @@ class SocialScreen extends StatelessWidget {
                       color: theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: unlocked ? theme.primaryColor.withOpacity(0.4) : theme.dividerColor,
+                        color: unlocked ? theme.primaryColor.withValues(alpha: 0.4) : theme.dividerColor,
                       ),
                     ),
                     child: Opacity(

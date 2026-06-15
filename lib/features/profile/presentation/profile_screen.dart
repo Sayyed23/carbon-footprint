@@ -15,7 +15,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _dailyReminders = true;
 
   void _exportUserData() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         final theme = Theme.of(context);
@@ -56,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _requestAccountDeletion() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundColor: theme.primaryColor.withOpacity(0.1),
+                      backgroundColor: theme.primaryColor.withValues(alpha: 0.1),
                       child: Text('KJ', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: theme.primaryColor)),
                     ),
                     const SizedBox(height: 12),
@@ -170,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: const Text('Background Location Tracking', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       subtitle: const Text('Used to auto-detect cycling/walking distances and compute transport offsets.', style: TextStyle(fontSize: 11)),
                       value: _bgLocationConsent,
-                      activeColor: theme.primaryColor,
+                      activeTrackColor: theme.primaryColor,
                       onChanged: (val) => setState(() => _bgLocationConsent = val),
                     ),
                     const Divider(height: 1),
@@ -178,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: const Text('Anonymous Demographic Sharing', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       subtitle: const Text('Used to compute localized city-level averages for community reports.', style: TextStyle(fontSize: 11)),
                       value: _anonymousAnalyticsConsent,
-                      activeColor: theme.primaryColor,
+                      activeTrackColor: theme.primaryColor,
                       onChanged: (val) => setState(() => _anonymousAnalyticsConsent = val),
                     ),
                     const Divider(height: 1),
@@ -186,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: const Text('Push Notification Alerts', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                       subtitle: const Text('Daily budget status warnings and streak notification prompts.', style: TextStyle(fontSize: 11)),
                       value: _dailyReminders,
-                      activeColor: theme.primaryColor,
+                      activeTrackColor: theme.primaryColor,
                       onChanged: (val) => setState(() => _dailyReminders = val),
                     ),
                   ],

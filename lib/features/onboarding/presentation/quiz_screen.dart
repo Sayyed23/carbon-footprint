@@ -207,7 +207,7 @@ class _QuizScreenState extends State<QuizScreen> {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: theme.primaryColor.withOpacity(0.2), width: 1.5),
+                border: Border.all(color: theme.primaryColor.withValues(alpha: 0.2), width: 1.5),
               ),
               child: Column(
                 children: [
@@ -221,7 +221,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     style: theme.textTheme.headlineLarge?.copyWith(
                       color: theme.primaryColor,
                       fontSize: 40,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   const Text(
@@ -319,7 +319,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 decoration: BoxDecoration(
-                  color: isSelected ? theme.primaryColor.withOpacity(0.08) : Colors.transparent,
+                  color: isSelected ? theme.primaryColor.withValues(alpha: 0.08) : Colors.transparent,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isSelected ? theme.primaryColor : theme.dividerColor,
@@ -346,7 +346,7 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

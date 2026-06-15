@@ -26,7 +26,7 @@ class NavigationShell extends StatelessWidget {
         type: BottomNavigationBarType.fixed,
         backgroundColor: theme.colorScheme.surface,
         selectedItemColor: theme.primaryColor,
-        unselectedItemColor: theme.colorScheme.onSurface.withOpacity(0.4),
+        unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha: 0.4),
         currentIndex: navigationShell.currentIndex,
         onTap: _onTap,
         items: const [

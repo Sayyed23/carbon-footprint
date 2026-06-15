@@ -74,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFD166).withOpacity(0.15),
+                      color: const Color(0xFFFFD166).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: const Color(0xFFFFD166), width: 1.5),
                     ),
@@ -106,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       )
@@ -136,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     '${_currentEmissions.toStringAsFixed(1)} kg',
                                     style: TextStyle(
                                       fontSize: 32,
-                                      fontWeight: FontWeight.black,
+                                      fontWeight: FontWeight.w900,
                                       color: isOverBudget ? const Color(0xFFC15C3D) : theme.primaryColor,
                                       fontFamily: 'Outfit',
                                     ),
@@ -155,7 +155,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                                     'Budget: ${_dailyBudget.toStringAsFixed(1)} kg',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -355,7 +355,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                         dotData: const FlDotData(show: false),
                         belowBarData: BarAreaData(
                           show: true,
-                          color: theme.primaryColor.withOpacity(0.1),
+                          color: theme.primaryColor.withValues(alpha: 0.1),
                         ),
                       ),
                     ],

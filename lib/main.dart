@@ -9,8 +9,8 @@ void main() async {
 
   // Initialize Local Hive Database for Offline-first 7-day cache
   await Hive.initFlutter();
-  await Hive.openBox('emissionsBox');
-  await Hive.openBox('settingsBox');
+  await Hive.openBox<dynamic>('emissionsBox');
+  await Hive.openBox<dynamic>('settingsBox');
 
   // Initialize Dependency Injection
   configureDependencies();
