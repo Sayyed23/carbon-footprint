@@ -1,4 +1,4 @@
-FROM caddy:2-alpine
-COPY build/web /usr/share/caddy
-COPY Caddyfile /etc/caddy/Caddyfile
-EXPOSE 80
+FROM nginx:alpine
+COPY build/web /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 8080
