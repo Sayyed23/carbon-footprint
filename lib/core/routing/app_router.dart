@@ -8,6 +8,9 @@ import '../../features/log_activity/presentation/log_activity_screen.dart';
 import '../../features/coach/presentation/coach_screen.dart';
 import '../../features/social/presentation/social_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/trends/presentation/trends_screen.dart';
+import '../../features/feed/presentation/feed_screen.dart';
+import '../../features/marketplace/presentation/marketplace_screen.dart';
 import 'navigation_shell.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -74,6 +77,18 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/trends',
+      builder: (context, state) => const TrendsScreen(),
+    ),
+    GoRoute(
+      path: '/feed',
+      builder: (context, state) => const ActionFeedScreen(),
+    ),
+    GoRoute(
+      path: '/marketplace',
+      builder: (context, state) => const MarketplaceScreen(),
     ),
   ],
 );

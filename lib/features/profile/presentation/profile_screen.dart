@@ -157,6 +157,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 24),
 
+              // Offset Marketplace Card
+              Text(
+                'Carbon Offsets',
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.shopping_bag_outlined, size: 28, color: Color(0xFF4A7C59)),
+                  title: const Text('Carbon Offset Marketplace', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  subtitle: const Text('Redeem EcoPoints or purchase RECs to neutralize your carbon emissions.', style: TextStyle(fontSize: 11)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/marketplace'),
+                ),
+              ),
+              const SizedBox(height: 24),
+
               // DPDP Act Consent Management Section
               Text(
                 'Data Consent Settings (DPDP Act)',
