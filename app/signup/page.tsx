@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { signUpUser, signInWithGoogle } from "@/lib/firebase/authService";
 import { saveUserProfile, addActivity, UserProfile } from "@/lib/firebase/db";
 import {
@@ -37,12 +38,19 @@ interface GuestCalculations {
 
 function SignUpForm() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   // Account Form State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, authLoading, router]);
 
   // Profile Form State (used if no guest calculator data exists)
   const [state, setState] = useState("Maharashtra");
@@ -58,11 +66,24 @@ function SignUpForm() {
     // Check if guest calculation data is stored
     const data = sessionStorage.getItem("guestCalculations");
     if (data) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHasGuestData(true);
-      setGuestData(JSON.parse(data) as GuestCalculations);
+      const timer = setTimeout(() => {
+        setHasGuestData(true);
+        setGuestData(JSON.parse(data) as GuestCalculations);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, []);
+
+  if (authLoading) {
+    return (
+      <div className="w-full max-w-md glass p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center min-h-[400px]">
+        <Leaf className="h-10 w-10 text-primary animate-bounce mb-3" />
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Verifying session...
+        </p>
+      </div>
+    );
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,10 +107,16 @@ function SignUpForm() {
     } catch (err: unknown) {
       const error = err as Error & { code?: string };
       console.error("Signup error:", error);
-      if (error.code === "auth/email-already-in-use") {
+      const errCode = error.code || "";
+      const errMsg = error.message || "";
+      if (errCode === "auth/email-already-in-use" || errMsg.includes("auth/email-already-in-use")) {
         setError("This email address is already registered.");
+      } else if (errCode === "auth/weak-password" || errMsg.includes("auth/weak-password")) {
+        setError("Password must be at least 6 characters long.");
+      } else if (errCode === "auth/invalid-email" || errMsg.includes("auth/invalid-email")) {
+        setError("Please enter a valid email address.");
       } else {
-        setError(error.message || "An error occurred during registration.");
+        setError(errMsg || "An error occurred during registration.");
       }
       setLoading(false);
     }

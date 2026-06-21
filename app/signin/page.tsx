@@ -1,18 +1,39 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/components/providers/AuthProvider";
 import { signInUser, signInWithGoogle } from "@/lib/firebase/authService";
 import { Leaf, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-background">
+        <span className="p-3 bg-primary/10 text-primary rounded-full animate-bounce mb-3">
+          <Leaf className="h-8 w-8" />
+        </span>
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Verifying session...
+        </p>
+      </div>
+    );
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,14 +51,21 @@ export default function SignInPage() {
     } catch (err: unknown) {
       const error = err as Error & { code?: string };
       console.error("Login error:", error);
+      const errCode = error.code || "";
+      const errMsg = error.message || "";
       if (
-        error.code === "auth/user-not-found" ||
-        error.code === "auth/wrong-password" ||
-        error.code === "auth/invalid-credential"
+        errCode === "auth/user-not-found" ||
+        errCode === "auth/wrong-password" ||
+        errCode === "auth/invalid-credential" ||
+        errMsg.includes("auth/user-not-found") ||
+        errMsg.includes("auth/wrong-password") ||
+        errMsg.includes("auth/invalid-credential")
       ) {
         setError("Invalid email address or password.");
+      } else if (errCode === "auth/invalid-email" || errMsg.includes("auth/invalid-email")) {
+        setError("Please enter a valid email address.");
       } else {
-        setError(error.message || "An error occurred during authentication.");
+        setError(errMsg || "An error occurred during authentication.");
       }
       setLoading(false);
     }

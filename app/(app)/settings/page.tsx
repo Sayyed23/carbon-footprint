@@ -49,10 +49,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (profile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setState(profile.state);
-      setDietType(profile.dietType);
-      setHouseholdSize(profile.householdSize);
+      const timer = setTimeout(() => {
+        setState(profile.state);
+        setDietType(profile.dietType);
+        setHouseholdSize(profile.householdSize);
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [profile]);
 
@@ -188,12 +190,17 @@ export default function SettingsPage() {
     } catch (err: unknown) {
       const error = err as Error & { code?: string };
       console.error("Account deletion failed:", error);
-      if (error.code === "auth/requires-recent-login") {
+      const errCode = error.code || "";
+      const errMsg = error.message || "";
+      if (
+        errCode === "auth/requires-recent-login" ||
+        errMsg.includes("auth/requires-recent-login")
+      ) {
         setErrorMsg(
           "This action requires a recent authentication login. Please log out, sign in again, and attempt deletion immediately."
         );
       } else {
-        setErrorMsg(error.message || "Wiping database failed. Account status unchanged.");
+        setErrorMsg(errMsg || "Wiping database failed. Account status unchanged.");
       }
       setDeletingAccount(false);
     }
