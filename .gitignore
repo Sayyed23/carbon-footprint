@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -10,28 +11,49 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# testing and coverage
 /coverage
+coverage/
+*.lcov
 
-# next.js
+# next.js build output
 /.next/
 /out/
 
-# production
+# production / build outputs
 /build
+dist/
+**/lib/
+functions/lib/
 
-# misc
-.DS_Store
-*.pem
+# firebase
+.firebase/
+*-firebase-adminsdk-*.json
+firebase-debug.log
+firestore-debug.log
+pubsub-debug.log
+ui-debug.log
+firebase-adminsdk*.json
+*service-account*.json
+*credentials*.json
+.runtimeconfig.json
 
-# debug
+# local environment files (contains secrets, keep off git)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+.env.*
+!.env.example
+
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel
@@ -39,3 +61,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs, Editors, and OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+
+# Agent and plugin local files
+.agents/
+skills-lock.json
