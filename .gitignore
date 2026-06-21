@@ -48,6 +48,7 @@ firebase-adminsdk*.json
 *.env
 .env.*
 !.env.example
+!.env.production
 
 # debug logs
 npm-debug.log*
