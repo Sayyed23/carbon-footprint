@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { saveUserProfile, getActivities, UserProfile } from "@/lib/firebase/db";
@@ -71,7 +71,7 @@ export default function SettingsPage() {
     );
   }
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: FormEvent) => {
     e.preventDefault();
     setUpdating(true);
     setSuccessMsg(null);

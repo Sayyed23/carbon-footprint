@@ -100,7 +100,7 @@ GUIDELINES:
 
 function mockCoachResponse(
   messages: CoachMessage[],
-  activities: CoachActivity[],
+  _activities: CoachActivity[],
   profile: CoachProfile
 ) {
   const lastMsg = messages[messages.length - 1].content.toLowerCase();

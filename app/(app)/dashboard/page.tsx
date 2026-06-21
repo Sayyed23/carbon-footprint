@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -147,7 +147,7 @@ export default function Dashboard() {
   const currentEstimatedImpact = getEstimatedCO2(category, subType, quantity);
 
   // Submit manual log
-  const handleManualSubmit = async (e: React.FormEvent) => {
+  const handleManualSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (isNaN(quantity) || quantity <= 0) {
       alert("Please enter a valid positive quantity.");

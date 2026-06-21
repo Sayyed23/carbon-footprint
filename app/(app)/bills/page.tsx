@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -53,7 +53,7 @@ export default function BillScannerPage() {
 
   const statesList = Object.keys(DEFAULT_EMISSION_FACTORS.electricity.byState).sort();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);
     setWarning(null);
     setExtractedData(null);
