@@ -11,15 +11,16 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       console.warn("GEMINI_API_KEY is not configured. Returning mock parsed activities.");
-      return NextResponse.json({ 
+      return NextResponse.json({
         activities: mockParse(text),
-        warning: "Running in mock mode. Set GEMINI_API_KEY in .env.local to enable real AI parsing."
+        warning:
+          "Running in mock mode. Set GEMINI_API_KEY in .env.local to enable real AI parsing.",
       });
     }
 
     // Initialize Google Generative AI SDK
     const genAI = new GoogleGenerativeAI(apiKey);
-    
+
     // Using gemini-2.5-flash for speed and lower token costs
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
@@ -33,25 +34,25 @@ export async function POST(req: NextRequest) {
               items: {
                 type: SchemaType.OBJECT,
                 properties: {
-                  category: { 
-                    type: SchemaType.STRING, 
+                  category: {
+                    type: SchemaType.STRING,
                     enum: ["transport", "electricity", "cooking", "diet", "consumption"],
-                    format: "enum"
+                    format: "enum",
                   },
                   subType: { type: SchemaType.STRING },
                   quantity: { type: SchemaType.NUMBER },
                   unit: { type: SchemaType.STRING },
-                  note: { type: SchemaType.STRING }
+                  note: { type: SchemaType.STRING },
                 },
-                required: ["category", "subType", "quantity", "unit", "note"]
-              }
-            }
+                required: ["category", "subType", "quantity", "unit", "note"],
+              },
+            },
           },
-          required: ["activities"]
-        }
-      }
+          required: ["activities"],
+        },
+      },
     });
-    
+
     const prompt = `You are a carbon footprint activity parser for the Indian market.
 Parse the user's natural language daily log text into one or more structured activity entries.
 The text may contain Hinglish or regional Indian terms (e.g. "auto", "rickshaw", "share-auto", "activa", "scooter", "two-wheeler", "metro", "local train", "veg thali", "paneer", "biryani", "chicken", "AC for 4 hours", "biomass", "cylinder").
@@ -75,7 +76,6 @@ Only extract what is explicitly stated or strongly implied. Set reasonable defau
 
     const parsedJson = JSON.parse(responseText);
     return NextResponse.json({ activities: parsedJson.activities });
-
   } catch (error: unknown) {
     const err = error as Error;
     console.error("Gemini parse error:", err);
@@ -88,13 +88,19 @@ function mockParse(text: string) {
   const lowercase = text.toLowerCase();
   const activities = [];
 
-  if (lowercase.includes("scooter") || lowercase.includes("activa") || lowercase.includes("2w") || lowercase.includes("two wheeler") || lowercase.includes("bike")) {
+  if (
+    lowercase.includes("scooter") ||
+    lowercase.includes("activa") ||
+    lowercase.includes("2w") ||
+    lowercase.includes("two wheeler") ||
+    lowercase.includes("bike")
+  ) {
     activities.push({
       category: "transport",
       subType: "2w_petrol",
       quantity: 15,
       unit: "km",
-      note: "Scooter travel (estimated 15km)"
+      note: "Scooter travel (estimated 15km)",
     });
   } else if (lowercase.includes("car") || lowercase.includes("taxi") || lowercase.includes("cab")) {
     activities.push({
@@ -102,7 +108,7 @@ function mockParse(text: string) {
       subType: "4w_petrol",
       quantity: 20,
       unit: "km",
-      note: "Car commute (estimated 20km)"
+      note: "Car commute (estimated 20km)",
     });
   } else if (lowercase.includes("auto") || lowercase.includes("rickshaw")) {
     activities.push({
@@ -110,7 +116,7 @@ function mockParse(text: string) {
       subType: "3w_cng",
       quantity: 8,
       unit: "km",
-      note: "CNG Auto-rickshaw ride (estimated 8km)"
+      note: "CNG Auto-rickshaw ride (estimated 8km)",
     });
   } else if (lowercase.includes("metro") || lowercase.includes("train")) {
     activities.push({
@@ -118,25 +124,37 @@ function mockParse(text: string) {
       subType: "metro_train",
       quantity: 25,
       unit: "km",
-      note: "Metro train commute (estimated 25km)"
+      note: "Metro train commute (estimated 25km)",
     });
   }
 
-  if (lowercase.includes("veg") || lowercase.includes("thali") || lowercase.includes("paneer") || lowercase.includes("roti") || lowercase.includes("dal")) {
+  if (
+    lowercase.includes("veg") ||
+    lowercase.includes("thali") ||
+    lowercase.includes("paneer") ||
+    lowercase.includes("roti") ||
+    lowercase.includes("dal")
+  ) {
     activities.push({
       category: "diet",
       subType: "vegetarian",
       quantity: 1,
       unit: "day",
-      note: "Vegetarian meals"
+      note: "Vegetarian meals",
     });
-  } else if (lowercase.includes("chicken") || lowercase.includes("biryani") || lowercase.includes("non-veg") || lowercase.includes("egg") || lowercase.includes("fish")) {
+  } else if (
+    lowercase.includes("chicken") ||
+    lowercase.includes("biryani") ||
+    lowercase.includes("non-veg") ||
+    lowercase.includes("egg") ||
+    lowercase.includes("fish")
+  ) {
     activities.push({
       category: "diet",
       subType: lowercase.includes("egg") ? "eggetarian" : "non_veg_low",
       quantity: 1,
       unit: "day",
-      note: lowercase.includes("egg") ? "Eggetarian diet log" : "Non-vegetarian meal (low-meat)"
+      note: lowercase.includes("egg") ? "Eggetarian diet log" : "Non-vegetarian meal (low-meat)",
     });
   }
 
@@ -146,7 +164,7 @@ function mockParse(text: string) {
       subType: "grid",
       quantity: 6,
       unit: "kWh",
-      note: "Air conditioner running (estimated 6 kWh)"
+      note: "Air conditioner running (estimated 6 kWh)",
     });
   }
 
@@ -156,7 +174,7 @@ function mockParse(text: string) {
       subType: "vegetarian",
       quantity: 1,
       unit: "day",
-      note: "Default vegetarian diet log (from context)"
+      note: "Default vegetarian diet log (from context)",
     });
   }
 

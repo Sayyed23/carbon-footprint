@@ -35,11 +35,11 @@ export const parseUtilityBill = onCall({ secrets: ["GEMINI_API_KEY"] }, async (r
           properties: {
             state: { type: SchemaType.STRING },
             billingPeriod: { type: SchemaType.STRING },
-            unitsKwh: { type: SchemaType.NUMBER }
+            unitsKwh: { type: SchemaType.NUMBER },
           },
-          required: ["state", "billingPeriod", "unitsKwh"]
-        }
-      }
+          required: ["state", "billingPeriod", "unitsKwh"],
+        },
+      },
     });
 
     const prompt = `You are a utility bill parser for Indian electricity boards.
@@ -51,8 +51,8 @@ Extract the following structured data from this electricity bill photo:
     const imagePart = {
       inlineData: {
         data: imageBase64,
-        mimeType: mimeType
-      }
+        mimeType: mimeType,
+      },
     };
 
     const result = await model.generateContent([prompt, imagePart]);
@@ -63,7 +63,6 @@ Extract the following structured data from this electricity bill photo:
 
     const parsedJson = JSON.parse(responseText);
     return { data: parsedJson };
-
   } catch (error: unknown) {
     const err = error as Error;
     console.error("Gemini Vision OCR Cloud Function failed:", err);

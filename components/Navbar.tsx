@@ -5,7 +5,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./providers/AuthProvider";
 import { useTheme } from "./providers/ThemeProvider";
 import { logoutUser } from "@/lib/firebase/authService";
-import { Leaf, Sun, Moon, LogOut, User as UserIcon, Menu, X, BarChart3, MessageSquare, Upload, Trophy, BookOpen } from "lucide-react";
+import {
+  Leaf,
+  Sun,
+  Moon,
+  LogOut,
+  User as UserIcon,
+  Menu,
+  X,
+  BarChart3,
+  MessageSquare,
+  Upload,
+  Trophy,
+  BookOpen,
+} from "lucide-react";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -32,7 +45,7 @@ export default function Navbar() {
     { name: "Awareness", href: "/awareness", icon: BookOpen, authRequired: false },
   ];
 
-  const visibleLinks = navLinks.filter(link => !link.authRequired || !!user);
+  const visibleLinks = navLinks.filter((link) => !link.authRequired || !!user);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -40,7 +53,10 @@ export default function Navbar() {
         <div className="flex h-16 justify-between items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary">
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-xl font-bold tracking-tight text-primary"
+            >
               <Leaf className="h-6 w-6 stroke-[2.5]" />
               <span>EcoTrace</span>
             </Link>
@@ -153,7 +169,7 @@ export default function Navbar() {
               </Link>
             );
           })}
-          
+
           <div className="border-t border-border pt-4 mt-2">
             {user ? (
               <div className="space-y-2">

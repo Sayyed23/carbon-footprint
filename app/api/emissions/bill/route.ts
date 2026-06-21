@@ -6,7 +6,10 @@ export async function POST(req: NextRequest) {
     const { imageBase64, mimeType } = await req.json();
 
     if (!imageBase64 || !mimeType) {
-      return NextResponse.json({ error: "Image data (base64) and mimeType are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Image data (base64) and mimeType are required" },
+        { status: 400 }
+      );
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -16,9 +19,10 @@ export async function POST(req: NextRequest) {
         data: {
           state: "Maharashtra",
           billingPeriod: "May 2026",
-          unitsKwh: 342
+          unitsKwh: 342,
         },
-        warning: "Running in mock mode. Set GEMINI_API_KEY in .env.local to enable real OCR parsing."
+        warning:
+          "Running in mock mode. Set GEMINI_API_KEY in .env.local to enable real OCR parsing.",
       });
     }
 
@@ -32,11 +36,11 @@ export async function POST(req: NextRequest) {
           properties: {
             state: { type: SchemaType.STRING },
             billingPeriod: { type: SchemaType.STRING },
-            unitsKwh: { type: SchemaType.NUMBER }
+            unitsKwh: { type: SchemaType.NUMBER },
           },
-          required: ["state", "billingPeriod", "unitsKwh"]
-        }
-      }
+          required: ["state", "billingPeriod", "unitsKwh"],
+        },
+      },
     });
 
     const prompt = `You are a utility bill parser for Indian electricity boards (MSEDCL, Tata Power, BESCOM, Adani, BSES, etc.).
@@ -50,8 +54,8 @@ Only extract what is present in the image. Return units as a clean number.`;
     const imagePart = {
       inlineData: {
         data: imageBase64,
-        mimeType: mimeType
-      }
+        mimeType: mimeType,
+      },
     };
 
     const result = await model.generateContent([prompt, imagePart]);
@@ -62,7 +66,6 @@ Only extract what is present in the image. Return units as a clean number.`;
 
     const parsedJson = JSON.parse(responseText);
     return NextResponse.json({ data: parsedJson });
-
   } catch (error: unknown) {
     const err = error as Error;
     console.error("Utility Bill Vision OCR failed:", err);

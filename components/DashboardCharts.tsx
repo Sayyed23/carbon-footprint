@@ -1,16 +1,16 @@
 "use client";
 
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
   LineChart,
-  Line
+  Line,
 } from "recharts";
 
 interface ChartDataPoint {
@@ -68,11 +68,12 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
   if (sortedData.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center bg-muted/20 border border-border border-dashed rounded-xl">
-        <p className="text-sm text-muted-foreground">Log activities to display your carbon breakdown.</p>
+        <p className="text-sm text-muted-foreground">
+          Log activities to display your carbon breakdown.
+        </p>
       </div>
     );
   }
-
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
@@ -81,20 +82,33 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
         <h3 className="text-lg font-bold mb-4">Carbon Split by Category</h3>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={sortedData}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+            <BarChart data={sortedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="rgba(255,255,255,0.05)"
+              />
               <XAxis dataKey="date" stroke="currentColor" className="text-xs opacity-65" />
               <YAxis stroke="currentColor" className="text-xs opacity-65" />
               <Tooltip content={<CustomTooltip />} />
               <Legend verticalAlign="top" height={36} className="text-xs" />
-              <Bar dataKey="Transport" stackId="a" fill="#3b82f6" name="Transport" radius={[0, 0, 0, 0]} />
+              <Bar
+                dataKey="Transport"
+                stackId="a"
+                fill="#3b82f6"
+                name="Transport"
+                radius={[0, 0, 0, 0]}
+              />
               <Bar dataKey="Electricity" stackId="a" fill="#eab308" name="Electricity" />
               <Bar dataKey="Diet" stackId="a" fill="#10b981" name="Diet" />
               <Bar dataKey="Cooking" stackId="a" fill="#ef4444" name="Cooking" />
-              <Bar dataKey="Consumption" stackId="a" fill="#a855f7" name="Consumption" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="Consumption"
+                stackId="a"
+                fill="#a855f7"
+                name="Consumption"
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -105,22 +119,23 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
         <h3 className="text-lg font-bold mb-4">Daily Emissions Trend</h3>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={sortedData}
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+            <LineChart data={sortedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="rgba(255,255,255,0.05)"
+              />
               <XAxis dataKey="date" stroke="currentColor" className="text-xs opacity-65" />
               <YAxis stroke="currentColor" className="text-xs opacity-65" />
               <Tooltip />
               <Legend verticalAlign="top" height={36} className="text-xs" />
-              <Line 
-                type="monotone" 
-                dataKey="Total" 
-                stroke="#10b981" 
-                strokeWidth={3} 
+              <Line
+                type="monotone"
+                dataKey="Total"
+                stroke="#10b981"
+                strokeWidth={3}
                 dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 6 }} 
+                activeDot={{ r: 6 }}
                 name="Total kg CO2e"
               />
             </LineChart>

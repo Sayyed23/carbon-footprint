@@ -34,8 +34,8 @@
 }
 
 :root {
-  --background: 120 20% 98%;      /* Very soft, tinted white */
-  --foreground: 120 20% 8%;       /* Deep charcoal-green */
+  --background: 120 20% 98%; /* Very soft, tinted white */
+  --foreground: 120 20% 8%; /* Deep charcoal-green */
 
   --card: 0 0% 100%;
   --card-foreground: 120 20% 8%;
@@ -43,10 +43,10 @@
   --popover: 0 0% 100%;
   --popover-foreground: 120 20% 8%;
 
-  --primary: 142 76% 36%;        /* Vibrant forest/emerald green */
+  --primary: 142 76% 36%; /* Vibrant forest/emerald green */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 142 30% 92%;      /* Soft green-gray */
+  --secondary: 142 30% 92%; /* Soft green-gray */
   --secondary-foreground: 142 80% 20%;
 
   --muted: 120 10% 92%;
@@ -66,16 +66,16 @@
 }
 
 .dark {
-  --background: 140 25% 6%;      /* Extremely dark obsidian green-black */
-  --foreground: 120 10% 95%;      /* Crisp, off-white */
+  --background: 140 25% 6%; /* Extremely dark obsidian green-black */
+  --foreground: 120 10% 95%; /* Crisp, off-white */
 
-  --card: 140 25% 9%;             /* Card backing, slightly lighter obsidian */
+  --card: 140 25% 9%; /* Card backing, slightly lighter obsidian */
   --card-foreground: 120 10% 95%;
 
   --popover: 140 25% 9%;
   --popover-foreground: 120 10% 95%;
 
-  --primary: 142 70% 45%;        /* Lighter, glowing green for dark mode */
+  --primary: 142 70% 45%; /* Lighter, glowing green for dark mode */
   --primary-foreground: 140 25% 6%;
 
   --secondary: 140 20% 15%;
@@ -103,7 +103,9 @@
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 /* Glassmorphism utility */

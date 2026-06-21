@@ -9,8 +9,12 @@ const mockStore: { [key: string]: string } = {};
 global.window = {} as unknown as Window & typeof globalThis;
 global.localStorage = {
   getItem: (key: string) => mockStore[key] || null,
-  setItem: (key: string, value: string) => { mockStore[key] = value; },
-  removeItem: (key: string) => { delete mockStore[key]; },
+  setItem: (key: string, value: string) => {
+    mockStore[key] = value;
+  },
+  removeItem: (key: string) => {
+    delete mockStore[key];
+  },
   clear: () => {
     Object.keys(mockStore).forEach((key) => {
       delete mockStore[key];
@@ -21,7 +25,8 @@ global.localStorage = {
 };
 
 // DispatchEvent mock
-(global.window as unknown as { dispatchEvent: (event: Event) => boolean }).dispatchEvent = (_event: Event) => true;
+(global.window as unknown as { dispatchEvent: (event: Event) => boolean }).dispatchEvent = () =>
+  true;
 
 test("Auth Service Mock Mode - Sign Up", async () => {
   const { signUpUser } = await import("../lib/firebase/authService");
@@ -99,7 +104,10 @@ test("Auth Service Mock Mode - Logout", async () => {
   localStorage.clear();
 
   // Seed an active session
-  localStorage.setItem("mock_current_user", JSON.stringify({ uid: "usr_123", email: "user@example.com" }));
+  localStorage.setItem(
+    "mock_current_user",
+    JSON.stringify({ uid: "usr_123", email: "user@example.com" })
+  );
 
   // Run logout
   await logoutUser();

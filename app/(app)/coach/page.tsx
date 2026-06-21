@@ -5,19 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useUserActivities } from "@/lib/firebase/hooks";
 import Navbar from "@/components/Navbar";
-import { 
-  Send, 
-  Sparkles, 
-  Leaf, 
-  Calendar, 
-  Check, 
-  TrendingDown, 
-  MessageSquare,
-  Bookmark,
-  User,
-  Compass,
-  ArrowRight
-} from "lucide-react";
+import { Send, Sparkles, Leaf, Check, Bookmark, User, Compass } from "lucide-react";
 
 interface Message {
   role: "user" | "coach";
@@ -37,7 +25,7 @@ interface Recommendation {
 export default function CarbonCoachPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
-  
+
   // Get recent activities to ground the chat context
   const { data: activities = [] } = useUserActivities(user?.uid);
 
@@ -55,8 +43,8 @@ export default function CarbonCoachPage() {
 - "How can I reduce my electricity bill emissions?"
 - "What is the carbon impact of a CNG auto-rickshaw commute vs a petrol car?"
 - "What are simple steps to eat more sustainably in India?"`,
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [sending, setSending] = useState(false);
@@ -69,25 +57,28 @@ export default function CarbonCoachPage() {
       title: "Switch to Metro/Bus Commutes",
       category: "transport",
       impact: "~12 kg CO2e / week",
-      description: "Replace three solo petrol car commutes next week with Delhi/Mumbai/Pune metro or bus rides.",
-      committed: false
+      description:
+        "Replace three solo petrol car commutes next week with Delhi/Mumbai/Pune metro or bus rides.",
+      committed: false,
     },
     {
       id: "rec2",
       title: "Limit AC running time",
       category: "electricity",
       impact: "~9 kg CO2e / week",
-      description: "Reduce AC usage by 2 hours daily by setting a sleep timer and raising the temperature to 25°C.",
-      committed: false
+      description:
+        "Reduce AC usage by 2 hours daily by setting a sleep timer and raising the temperature to 25°C.",
+      committed: false,
     },
     {
       id: "rec3",
       title: "Try Dairy Alternatives",
       category: "diet",
       impact: "~4 kg CO2e / week",
-      description: "Substitute dairy milk/ghee with almond or soy alternatives for coffee and two meals this week.",
-      committed: false
-    }
+      description:
+        "Substitute dairy milk/ghee with almond or soy alternatives for coffee and two meals this week.",
+      committed: false,
+    },
   ]);
 
   useEffect(() => {
@@ -100,7 +91,9 @@ export default function CarbonCoachPage() {
         <span className="p-3 bg-primary/10 text-primary rounded-full animate-bounce mb-3">
           <Leaf className="h-8 w-8" />
         </span>
-        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">Loading Coach...</p>
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Loading Coach...
+        </p>
       </div>
     );
   }
@@ -112,17 +105,17 @@ export default function CarbonCoachPage() {
     const userMessage: Message = {
       role: "user",
       content: inputValue,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setSending(true);
 
     try {
-      const updatedMessages = [...messages, userMessage].map(msg => ({
+      const updatedMessages = [...messages, userMessage].map((msg) => ({
         role: msg.role === "user" ? "user" : "model",
-        content: msg.content
+        content: msg.content,
       }));
 
       const res = await fetch("/api/emissions/coach", {
@@ -131,35 +124,42 @@ export default function CarbonCoachPage() {
         body: JSON.stringify({
           messages: updatedMessages,
           activities,
-          profile
-        })
+          profile,
+        }),
       });
 
       const data = await res.json();
       if (data.response) {
-        setMessages(prev => [...prev, {
-          role: "coach",
-          content: data.response,
-          timestamp: new Date()
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "coach",
+            content: data.response,
+            timestamp: new Date(),
+          },
+        ]);
       } else {
         throw new Error(data.error || "Failed to fetch response");
       }
     } catch (error) {
       console.error("Coach fetch error:", error);
-      setMessages(prev => [...prev, {
-        role: "coach",
-        content: "Oops! I encountered an error connecting to my servers. Please try again in a few moments.",
-        timestamp: new Date()
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "coach",
+          content:
+            "Oops! I encountered an error connecting to my servers. Please try again in a few moments.",
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setSending(false);
     }
   };
 
   const handleCommit = (id: string) => {
-    setRecommendations(prev => 
-      prev.map(rec => rec.id === id ? { ...rec, committed: !rec.committed } : rec)
+    setRecommendations((prev) =>
+      prev.map((rec) => (rec.id === id ? { ...rec, committed: !rec.committed } : rec))
     );
   };
 
@@ -168,10 +168,8 @@ export default function CarbonCoachPage() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Chat Section */}
         <div className="lg:col-span-2 flex flex-col h-[75vh] glass border border-border rounded-2xl shadow-xl overflow-hidden">
-          
           {/* Chat Header */}
           <div className="px-6 py-4 bg-muted/40 border-b border-border flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -180,7 +178,9 @@ export default function CarbonCoachPage() {
               </div>
               <div>
                 <h2 className="font-bold text-md">AI Carbon Coach</h2>
-                <p className="text-xs text-muted-foreground">Ask questions & get advice grounded in your habits</p>
+                <p className="text-xs text-muted-foreground">
+                  Ask questions & get advice grounded in your habits
+                </p>
               </div>
             </div>
           </div>
@@ -190,21 +190,27 @@ export default function CarbonCoachPage() {
             {messages.map((msg, index) => {
               const isUser = msg.role === "user";
               return (
-                <div 
+                <div
                   key={index}
                   className={`flex gap-3 max-w-[85%] ${isUser ? "ml-auto flex-row-reverse" : ""}`}
                 >
-                  <div className={`p-2.5 rounded-full shrink-0 h-fit ${isUser ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+                  <div
+                    className={`p-2.5 rounded-full shrink-0 h-fit ${isUser ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}
+                  >
                     {isUser ? <User className="h-4 w-4" /> : <Leaf className="h-4 w-4" />}
                   </div>
-                  <div className={`p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${
-                    isUser 
-                      ? "bg-primary text-primary-foreground rounded-tr-none" 
-                      : "bg-card border border-border text-foreground rounded-tl-none"
-                  }`}>
+                  <div
+                    className={`p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${
+                      isUser
+                        ? "bg-primary text-primary-foreground rounded-tr-none"
+                        : "bg-card border border-border text-foreground rounded-tl-none"
+                    }`}
+                  >
                     {msg.content}
-                    <span className={`block text-[10px] mt-2 text-right ${isUser ? "text-primary-foreground/75" : "text-muted-foreground"}`}>
-                      {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <span
+                      className={`block text-[10px] mt-2 text-right ${isUser ? "text-primary-foreground/75" : "text-muted-foreground"}`}
+                    >
+                      {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
                 </div>
@@ -224,7 +230,10 @@ export default function CarbonCoachPage() {
           </div>
 
           {/* Chat Input */}
-          <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-muted/20 flex gap-2">
+          <form
+            onSubmit={handleSendMessage}
+            className="p-4 border-t border-border bg-muted/20 flex gap-2"
+          >
             <input
               type="text"
               value={inputValue}
@@ -250,17 +259,16 @@ export default function CarbonCoachPage() {
               <Bookmark className="h-5 w-5 text-primary" /> Weekly Action Goals
             </h3>
             <p className="text-xs text-muted-foreground mb-4">
-              Commit to personalized, actionable targets to reduce your footprint. Check back next week to verify consistency.
+              Commit to personalized, actionable targets to reduce your footprint. Check back next
+              week to verify consistency.
             </p>
 
             <div className="space-y-4">
               {recommendations.map((rec) => (
-                <div 
-                  key={rec.id} 
+                <div
+                  key={rec.id}
                   className={`p-4 border rounded-xl transition-all ${
-                    rec.committed 
-                      ? "border-primary bg-primary/5" 
-                      : "border-border bg-card/50"
+                    rec.committed ? "border-primary bg-primary/5" : "border-border bg-card/50"
                   }`}
                 >
                   <div className="flex justify-between items-start gap-2 mb-1">
@@ -269,8 +277,10 @@ export default function CarbonCoachPage() {
                       {rec.impact}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">{rec.description}</p>
-                  
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                    {rec.description}
+                  </p>
+
                   <button
                     onClick={() => handleCommit(rec.id)}
                     className={`w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
@@ -299,11 +309,12 @@ export default function CarbonCoachPage() {
               <Compass className="h-4 w-4" /> EcoTip for Indian Grids
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Charging EV scooters/cars between 10 AM and 3 PM matches high solar injection schedules on regional Indian grids, which translates to a lower actual charging carbon intensity!
+              Charging EV scooters/cars between 10 AM and 3 PM matches high solar injection
+              schedules on regional Indian grids, which translates to a lower actual charging carbon
+              intensity!
             </p>
           </div>
         </div>
-
       </main>
     </div>
   );

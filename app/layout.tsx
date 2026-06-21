@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EcoTrace — Personal Carbon Footprint Tracker for India",
-  description: "Understand, track, and reduce your daily carbon emissions. Get personalized, localized insights for transport, energy, and food in India with AI-powered coaching.",
+  description:
+    "Understand, track, and reduce your daily carbon emissions. Get personalized, localized insights for transport, energy, and food in India with AI-powered coaching.",
 };
 
 export default function RootLayout({
@@ -34,9 +35,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-200">
         <QueryProvider>
           <AuthProvider>
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
+            <ThemeProvider>{children}</ThemeProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

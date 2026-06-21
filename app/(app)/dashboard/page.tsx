@@ -1,37 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { useUserActivities, useUserDailySummaries } from "@/lib/firebase/hooks";
+import { useUserActivities } from "@/lib/firebase/hooks";
 import { addActivity, deleteActivity, Activity } from "@/lib/firebase/db";
-import { 
-  DEFAULT_EMISSION_FACTORS, 
-  calculateTransportEmissions, 
-  calculateElectricityEmissions, 
-  calculateCookingEmissions, 
-  calculateDietEmissions, 
-  calculateConsumptionEmissions 
+import {
+  DEFAULT_EMISSION_FACTORS,
+  calculateTransportEmissions,
+  calculateElectricityEmissions,
+  calculateCookingEmissions,
+  calculateDietEmissions,
+  calculateConsumptionEmissions,
+  type EmissionFactors,
 } from "@/lib/emissions/engine";
 import Navbar from "@/components/Navbar";
-import { 
-  Leaf, 
-  Sparkles, 
-  Plus, 
-  Calendar, 
-  Trash2, 
-  Flame, 
-  Car, 
-  Zap, 
-  Utensils, 
-  ShoppingBag, 
-  Check, 
-  X, 
-  User, 
-  Award, 
+import {
+  Leaf,
+  Sparkles,
+  Plus,
+  Trash2,
+  Flame,
+  Car,
+  Zap,
+  Utensils,
+  ShoppingBag,
+  X,
+  Award,
   FlameKindling,
-  ChevronRight
 } from "lucide-react";
 
 // Dynamically import the charts to prevent SSR hydration mismatches
@@ -47,10 +44,9 @@ const DashboardCharts = dynamic(() => import("@/components/DashboardCharts"), {
 export default function Dashboard() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
-  
+
   // Fetch real-time data synced to TanStack Query
   const { data: activities = [], isLoading: loadingActivities } = useUserActivities(user?.uid);
-  const { data: dailySummaries = [] } = useUserDailySummaries(user?.uid);
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -65,50 +61,44 @@ export default function Dashboard() {
   const [subType, setSubType] = useState("2w_petrol");
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState("");
-  
+
   // AI Logging State
   const [aiInput, setAiInput] = useState("");
   const [parsingAi, setParsingAi] = useState(false);
   const [aiWarning, setAiWarning] = useState<string | null>(null);
-  const [parsedActivities, setParsedActivities] = useState<Omit<Activity, "loggedAt" | "factorVersion">[]>([]);
-  
-  // Local state for UI feedback
-  const [streakCount, setStreakCount] = useState(0);
+  const [parsedActivities, setParsedActivities] = useState<
+    Omit<Activity, "loggedAt" | "factorVersion">[]
+  >([]);
 
-  // Set default subtype when category changes
-  useEffect(() => {
-    if (category === "transport") setSubType("2w_petrol");
-    else if (category === "electricity") setSubType("grid");
-    else if (category === "cooking") setSubType("lpg_cylinder");
-    else if (category === "diet") setSubType("vegetarian");
-    else if (category === "consumption") setSubType("delivery_order");
-  }, [category]);
+  // Pure rendering date state
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
 
-  // Compute Logging Streak from activities
   useEffect(() => {
-    if (activities.length === 0) {
-      setStreakCount(0);
-      return;
-    }
-    
+    const timer = setTimeout(() => {
+      setCurrentDate(new Date());
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Compute Logging Streak purely from activities and currentDate
+  const streakCount = useMemo(() => {
+    if (!currentDate || activities.length === 0) return 0;
+
     // Group unique logged dates (YYYY-MM-DD)
-    const loggedDates = new Set(
-      activities.map(a => a.loggedAt.toISOString().split("T")[0])
-    );
-    
+    const loggedDates = new Set(activities.map((a) => a.loggedAt.toISOString().split("T")[0]));
+
     const sortedDates = Array.from(loggedDates).sort((a, b) => b.localeCompare(a));
-    const todayStr = new Date().toISOString().split("T")[0];
-    const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split("T")[0];
-    
+    const todayStr = currentDate.toISOString().split("T")[0];
+    const yesterdayStr = new Date(currentDate.getTime() - 86400000).toISOString().split("T")[0];
+
     // Check if user logged today or yesterday
     if (sortedDates[0] !== todayStr && sortedDates[0] !== yesterdayStr) {
-      setStreakCount(0);
-      return;
+      return 0;
     }
-    
+
     let streak = 0;
-    let checkDate = new Date(sortedDates[0]);
-    
+    const checkDate = new Date(sortedDates[0]);
+
     for (let i = 0; i < sortedDates.length; i++) {
       const checkStr = checkDate.toISOString().split("T")[0];
       if (loggedDates.has(checkStr)) {
@@ -119,8 +109,8 @@ export default function Dashboard() {
         break;
       }
     }
-    setStreakCount(streak);
-  }, [activities]);
+    return streak;
+  }, [activities, currentDate]);
 
   if (loading || !user) {
     return (
@@ -128,7 +118,9 @@ export default function Dashboard() {
         <span className="p-3 bg-primary/10 text-primary rounded-full animate-bounce mb-3">
           <Leaf className="h-8 w-8" />
         </span>
-        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">Loading profile...</p>
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Loading profile...
+        </p>
       </div>
     );
   }
@@ -138,15 +130,15 @@ export default function Dashboard() {
     const userState = profile?.state || "Maharashtra";
     switch (cat) {
       case "transport":
-        return calculateTransportEmissions(sub as any, qty);
+        return calculateTransportEmissions(sub as keyof EmissionFactors["transport"], qty);
       case "electricity":
         return calculateElectricityEmissions(qty, userState);
       case "cooking":
-        return calculateCookingEmissions(sub as any, qty, userState);
+        return calculateCookingEmissions(sub as keyof EmissionFactors["cooking"], qty, userState);
       case "diet":
-        return calculateDietEmissions(sub as any, qty);
+        return calculateDietEmissions(sub as keyof EmissionFactors["diet"], qty);
       case "consumption":
-        return calculateConsumptionEmissions(sub as any, qty);
+        return calculateConsumptionEmissions(sub as keyof EmissionFactors["consumption"], qty);
       default:
         return 0;
     }
@@ -159,12 +151,19 @@ export default function Dashboard() {
     e.preventDefault();
     try {
       const impact = getEstimatedCO2(category, subType, quantity);
-      
-      const unit = 
-        category === "transport" ? "km" :
-        category === "electricity" ? "kWh" :
-        category === "cooking" ? (subType === "lpg_cylinder" ? "cylinder" : "unit") :
-        category === "diet" ? "day" : "item";
+
+      const unit =
+        category === "transport"
+          ? "km"
+          : category === "electricity"
+            ? "kWh"
+            : category === "cooking"
+              ? subType === "lpg_cylinder"
+                ? "cylinder"
+                : "unit"
+              : category === "diet"
+                ? "day"
+                : "item";
 
       await addActivity(user.uid, {
         category,
@@ -175,7 +174,7 @@ export default function Dashboard() {
         source: "manual",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: new Date(),
-        note: note || undefined
+        note: note || undefined,
       });
 
       // Reset form
@@ -223,7 +222,7 @@ export default function Dashboard() {
           source: "ai_parsed",
           factorVersion: DEFAULT_EMISSION_FACTORS.version,
           loggedAt: new Date(),
-          note: act.note
+          note: act.note,
         });
       }
       setParsedActivities([]);
@@ -244,12 +243,23 @@ export default function Dashboard() {
 
   // Process activities into Recharts format (group by past 7 days)
   const getChartData = () => {
-    const dataMap: { [dateStr: string]: any } = {};
-    const categories: Activity["category"][] = ["transport", "electricity", "cooking", "diet", "consumption"];
-    
-    // Initialize past 7 days
+    if (!currentDate) return [];
+
+    const dataMap: {
+      [dateStr: string]: {
+        date: string;
+        Transport: number;
+        Electricity: number;
+        Cooking: number;
+        Diet: number;
+        Consumption: number;
+        Total: number;
+      };
+    } = {};
+
+    // Initialize past 7 days based on currentDate
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
+      const d = new Date(currentDate.getTime());
       d.setDate(d.getDate() - i);
       const dateStr = d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
       dataMap[dateStr] = {
@@ -263,15 +273,20 @@ export default function Dashboard() {
       };
     }
 
-    activities.forEach(act => {
+    activities.forEach((act) => {
       const dateStr = act.loggedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
       if (dataMap[dateStr]) {
-        const catKey = 
-          act.category === "transport" ? "Transport" :
-          act.category === "electricity" ? "Electricity" :
-          act.category === "cooking" ? "Cooking" :
-          act.category === "diet" ? "Diet" : "Consumption";
-        
+        const catKey =
+          act.category === "transport"
+            ? "Transport"
+            : act.category === "electricity"
+              ? "Electricity"
+              : act.category === "cooking"
+                ? "Cooking"
+                : act.category === "diet"
+                  ? "Diet"
+                  : "Consumption";
+
         dataMap[dateStr][catKey] += act.co2eKg;
         dataMap[dateStr].Total += act.co2eKg;
       }
@@ -281,26 +296,33 @@ export default function Dashboard() {
   };
 
   const chartData = getChartData();
-  
-  // Calculate summary metrics for headers
-  const todayEmissions = activities
-    .filter(a => a.loggedAt.toDateString() === new Date().toDateString())
-    .reduce((sum, a) => sum + a.co2eKg, 0);
 
-  const weeklyEmissions = activities
-    .filter(a => Date.now() - a.loggedAt.getTime() <= 7 * 86400000)
-    .reduce((sum, a) => sum + a.co2eKg, 0);
+  // Compute daily and weekly metrics purely based on currentDate
+  const todayEmissions = currentDate
+    ? activities
+        .filter((a) => a.loggedAt.toDateString() === currentDate.toDateString())
+        .reduce((sum, a) => sum + a.co2eKg, 0)
+    : 0;
+
+  const weeklyEmissions = currentDate
+    ? activities
+        .filter((a) => currentDate.getTime() - a.loggedAt.getTime() <= 7 * 86400000)
+        .reduce((sum, a) => sum + a.co2eKg, 0)
+    : 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Welcome Section */}
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight">EcoTrace Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Logged in as: <span className="font-semibold">{user.email}</span> • State: <span className="font-semibold text-primary">{profile?.state || "Maharashtra"}</span></p>
+            <p className="text-muted-foreground mt-1">
+              Logged in as: <span className="font-semibold">{user.email}</span> • State:{" "}
+              <span className="font-semibold text-primary">{profile?.state || "Maharashtra"}</span>
+            </p>
           </div>
           <button
             onClick={() => setLogModalOpen(true)}
@@ -318,7 +340,9 @@ export default function Dashboard() {
               <FlameKindling className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-xs text-muted-foreground uppercase font-bold">Logging Streak</span>
+              <span className="text-xs text-muted-foreground uppercase font-bold">
+                Logging Streak
+              </span>
               <p className="text-2xl font-black">{streakCount} Days</p>
             </div>
           </div>
@@ -328,7 +352,9 @@ export default function Dashboard() {
               <Leaf className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-xs text-muted-foreground uppercase font-bold">Logged Today</span>
+              <span className="text-xs text-muted-foreground uppercase font-bold">
+                Logged Today
+              </span>
               <p className="text-2xl font-black">{todayEmissions.toFixed(1)} kg CO2e</p>
             </div>
           </div>
@@ -338,7 +364,9 @@ export default function Dashboard() {
               <Zap className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-xs text-muted-foreground uppercase font-bold">This Week (Total)</span>
+              <span className="text-xs text-muted-foreground uppercase font-bold">
+                This Week (Total)
+              </span>
               <p className="text-2xl font-black">{weeklyEmissions.toFixed(1)} kg CO2e</p>
             </div>
           </div>
@@ -348,8 +376,12 @@ export default function Dashboard() {
               <Award className="h-6 w-6" />
             </div>
             <div>
-              <span className="text-xs text-muted-foreground uppercase font-bold">Diet Profile</span>
-              <p className="text-xl font-bold uppercase truncate max-w-[150px]">{profile?.dietType || "Vegetarian"}</p>
+              <span className="text-xs text-muted-foreground uppercase font-bold">
+                Diet Profile
+              </span>
+              <p className="text-xl font-bold uppercase truncate max-w-[150px]">
+                {profile?.dietType || "Vegetarian"}
+              </p>
             </div>
           </div>
         </section>
@@ -360,8 +392,11 @@ export default function Dashboard() {
             <Sparkles className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-bold">AI Conversational Logger</h2>
           </div>
-          <p className="text-xs text-muted-foreground">Type what you did today in plain English or Hinglish (e.g. <i>"I rode my electric scooter for 15 km and cooked on LPG cylinder"</i>):</p>
-          
+          <p className="text-xs text-muted-foreground">
+            Type what you did today in plain English or Hinglish (e.g.{" "}
+            <i>&quot;I rode my electric scooter for 15 km and cooked on LPG cylinder&quot;</i>):
+          </p>
+
           <div className="flex gap-2">
             <input
               type="text"
@@ -388,17 +423,29 @@ export default function Dashboard() {
 
           {parsedActivities.length > 0 && (
             <div className="mt-4 p-4 border border-border bg-muted/40 rounded-xl space-y-4 animate-fade-in">
-              <h3 className="text-sm font-bold border-b border-border pb-2">Verify AI-Parsed Activities</h3>
+              <h3 className="text-sm font-bold border-b border-border pb-2">
+                Verify AI-Parsed Activities
+              </h3>
               <div className="space-y-2">
                 {parsedActivities.map((act, idx) => (
-                  <div key={idx} className="flex justify-between items-center bg-card p-3 rounded-lg border border-border text-sm">
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center bg-card p-3 rounded-lg border border-border text-sm"
+                  >
                     <div>
-                      <span className="font-semibold capitalize text-primary text-xs tracking-wide bg-primary/10 px-2.5 py-0.5 rounded-full inline-block mb-1">{act.category}</span>
+                      <span className="font-semibold capitalize text-primary text-xs tracking-wide bg-primary/10 px-2.5 py-0.5 rounded-full inline-block mb-1">
+                        {act.category}
+                      </span>
                       <p className="font-medium">{act.note}</p>
-                      <p className="text-xs text-muted-foreground">Est: {getEstimatedCO2(act.category, act.subType, act.quantity).toFixed(1)} kg CO2e ({act.quantity} {act.unit})</p>
+                      <p className="text-xs text-muted-foreground">
+                        Est: {getEstimatedCO2(act.category, act.subType, act.quantity).toFixed(1)}{" "}
+                        kg CO2e ({act.quantity} {act.unit})
+                      </p>
                     </div>
-                    <button 
-                      onClick={() => setParsedActivities(parsedActivities.filter((_, i) => i !== idx))}
+                    <button
+                      onClick={() =>
+                        setParsedActivities(parsedActivities.filter((_, i) => i !== idx))
+                      }
                       className="text-destructive p-1 hover:bg-destructive/10 rounded-md transition-colors"
                     >
                       <X className="h-4 w-4" />
@@ -407,13 +454,13 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="flex gap-2 justify-end border-t border-border pt-4">
-                <button 
-                  onClick={() => setParsedActivities([])} 
+                <button
+                  onClick={() => setParsedActivities([])}
                   className="px-4 py-2 border border-border rounded-xl text-xs hover:bg-muted font-semibold"
                 >
                   Discard
                 </button>
-                <button 
+                <button
                   onClick={handleConfirmAiActivities}
                   className="px-5 py-2 bg-primary text-primary-foreground rounded-full text-xs font-semibold hover:bg-primary/90"
                 >
@@ -437,9 +484,13 @@ export default function Dashboard() {
           </div>
 
           {loadingActivities ? (
-            <div className="py-12 text-center animate-pulse text-sm text-muted-foreground">Loading history...</div>
+            <div className="py-12 text-center animate-pulse text-sm text-muted-foreground">
+              Loading history...
+            </div>
           ) : activities.length === 0 ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">No activities logged yet. Click "Log Activity" to start.</div>
+            <div className="py-12 text-center text-sm text-muted-foreground">
+              No activities logged yet. Click &quot;Log Activity&quot; to start.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -455,15 +506,27 @@ export default function Dashboard() {
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {activities.map((act) => {
-                    const CatIcon = 
-                      act.category === "transport" ? Car :
-                      act.category === "electricity" ? Zap :
-                      act.category === "cooking" ? Flame :
-                      act.category === "diet" ? Utensils : ShoppingBag;
-                    
+                    const CatIcon =
+                      act.category === "transport"
+                        ? Car
+                        : act.category === "electricity"
+                          ? Zap
+                          : act.category === "cooking"
+                            ? Flame
+                            : act.category === "diet"
+                              ? Utensils
+                              : ShoppingBag;
+
                     return (
                       <tr key={act.id} className="hover:bg-muted/30">
-                        <td className="py-3 px-4 whitespace-nowrap">{act.loggedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+                        <td className="py-3 px-4 whitespace-nowrap">
+                          {act.loggedAt.toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <CatIcon className="h-4 w-4 text-primary shrink-0" />
@@ -471,17 +534,34 @@ export default function Dashboard() {
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="font-semibold text-foreground">{act.quantity}</span> <span className="text-xs text-muted-foreground font-medium">{act.unit}</span>
-                          {act.note && <p className="text-xs text-muted-foreground mt-0.5 max-w-xs truncate">{act.note}</p>}
+                          <span className="font-semibold text-foreground">{act.quantity}</span>{" "}
+                          <span className="text-xs text-muted-foreground font-medium">
+                            {act.unit}
+                          </span>
+                          {act.note && (
+                            <p className="text-xs text-muted-foreground mt-0.5 max-w-xs truncate">
+                              {act.note}
+                            </p>
+                          )}
                         </td>
-                        <td className="py-3 px-4 font-bold text-foreground">{act.co2eKg.toFixed(1)} kg CO2e</td>
+                        <td className="py-3 px-4 font-bold text-foreground">
+                          {act.co2eKg.toFixed(1)} kg CO2e
+                        </td>
                         <td className="py-3 px-4 whitespace-nowrap">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                            act.source === "ai_parsed" ? "bg-purple-500/10 text-purple-600 dark:text-purple-400" :
-                            act.source === "bill_ocr" ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" :
-                            "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                          }`}>
-                            {act.source === "ai_parsed" ? "AI Log" : act.source === "bill_ocr" ? "Bill Scanner" : "Manual"}
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                              act.source === "ai_parsed"
+                                ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                                : act.source === "bill_ocr"
+                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                  : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                            }`}
+                          >
+                            {act.source === "ai_parsed"
+                              ? "AI Log"
+                              : act.source === "bill_ocr"
+                                ? "Bill Scanner"
+                                : "Manual"}
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">
@@ -520,11 +600,24 @@ export default function Dashboard() {
 
             <form onSubmit={handleManualSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="category">Category</label>
+                <label
+                  className="text-xs font-bold text-muted-foreground uppercase"
+                  htmlFor="category"
+                >
+                  Category
+                </label>
                 <select
                   id="category"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
+                  onChange={(e) => {
+                    const newCat = e.target.value as Activity["category"];
+                    setCategory(newCat);
+                    if (newCat === "transport") setSubType("2w_petrol");
+                    else if (newCat === "electricity") setSubType("grid");
+                    else if (newCat === "cooking") setSubType("lpg_cylinder");
+                    else if (newCat === "diet") setSubType("vegetarian");
+                    else if (newCat === "consumption") setSubType("delivery_order");
+                  }}
                   className="w-full bg-muted/50 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none"
                 >
                   <option value="transport">Transport / Commute</option>
@@ -536,7 +629,12 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="subtype">Type</label>
+                <label
+                  className="text-xs font-bold text-muted-foreground uppercase"
+                  htmlFor="subtype"
+                >
+                  Type
+                </label>
                 <select
                   id="subtype"
                   value={subType}
@@ -559,9 +657,7 @@ export default function Dashboard() {
                       <option value="flight_domestic">Domestic Flight</option>
                     </>
                   )}
-                  {category === "electricity" && (
-                    <option value="grid">Grid Electricity</option>
-                  )}
+                  {category === "electricity" && <option value="grid">Grid Electricity</option>}
                   {category === "cooking" && (
                     <>
                       <option value="lpg_cylinder">LPG Cylinder (14.2 kg)</option>
@@ -591,7 +687,12 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="qty">Quantity</label>
+                  <label
+                    className="text-xs font-bold text-muted-foreground uppercase"
+                    htmlFor="qty"
+                  >
+                    Quantity
+                  </label>
                   <input
                     id="qty"
                     type="number"
@@ -604,18 +705,29 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-muted-foreground uppercase block mb-1">Unit</span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase block mb-1">
+                    Unit
+                  </span>
                   <div className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm font-semibold text-muted-foreground">
-                    {category === "transport" ? "km" :
-                     category === "electricity" ? "kWh" :
-                     category === "cooking" ? (subType === "lpg_cylinder" ? "cylinder" : "unit") :
-                     category === "diet" ? "day" : "item"}
+                    {category === "transport"
+                      ? "km"
+                      : category === "electricity"
+                        ? "kWh"
+                        : category === "cooking"
+                          ? subType === "lpg_cylinder"
+                            ? "cylinder"
+                            : "unit"
+                          : category === "diet"
+                            ? "day"
+                            : "item"}
                   </div>
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="note">Notes / Description</label>
+                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="note">
+                  Notes / Description
+                </label>
                 <input
                   id="note"
                   type="text"
@@ -628,8 +740,12 @@ export default function Dashboard() {
 
               {/* Real-time Impact Indicator */}
               <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-center">
-                <span className="text-xs text-muted-foreground block font-semibold uppercase">Estimated Emission Impact</span>
-                <span className="text-2xl font-black text-primary">{currentEstimatedImpact.toFixed(2)} kg CO2e</span>
+                <span className="text-xs text-muted-foreground block font-semibold uppercase">
+                  Estimated Emission Impact
+                </span>
+                <span className="text-2xl font-black text-primary">
+                  {currentEstimatedImpact.toFixed(2)} kg CO2e
+                </span>
               </div>
 
               <button

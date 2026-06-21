@@ -446,41 +446,41 @@ A living ARCHITECTURE.md documents the emission-calculation pipeline and the Gem
 
 ecotrace/
 
-├── app/                    # Next.js App Router pages
+├── app/ # Next.js App Router pages
 
-│   ├── (marketing)/        # Public awareness pages (SEO)
+│ ├── (marketing)/ # Public awareness pages (SEO)
 
-│   ├── (app)/              # Authenticated dashboard, logging, coach
+│ ├── (app)/ # Authenticated dashboard, logging, coach
 
-│   └── api/                # Route handlers (webhooks only; logic lives in Cloud Functions)
+│ └── api/ # Route handlers (webhooks only; logic lives in Cloud Functions)
 
-├── components/             # Presentational + shared UI
+├── components/ # Presentational + shared UI
 
 ├── lib/
 
-│   ├── emissions/          # Emission factor engine, calculators
+│ ├── emissions/ # Emission factor engine, calculators
 
-│   ├── gemini/             # Gemini client wrappers, prompt templates
+│ ├── gemini/ # Gemini client wrappers, prompt templates
 
-│   └── firebase/           # Firebase client + admin SDK init
+│ └── firebase/ # Firebase client + admin SDK init
 
-├── functions/              # Cloud Functions (TypeScript)
+├── functions/ # Cloud Functions (TypeScript)
 
-│   ├── src/calculateFootprint.ts
+│ ├── src/calculateFootprint.ts
 
-│   ├── src/parseActivityText.ts
+│ ├── src/parseActivityText.ts
 
-│   ├── src/parseUtilityBill.ts
+│ ├── src/parseUtilityBill.ts
 
-│   └── src/weeklyDigest.ts     # Scheduled function
+│ └── src/weeklyDigest.ts # Scheduled function
 
-├── types/                  # Shared TypeScript interfaces
+├── types/ # Shared TypeScript interfaces
 
-├── tests/                  # Unit + integration tests
+├── tests/ # Unit + integration tests
 
-├── e2e/                    # Playwright end-to-end tests
+├── e2e/ # Playwright end-to-end tests
 
-└── .github/workflows/      # CI/CD pipelines
+└── .github/workflows/ # CI/CD pipelines
 
 8.2 CI/CD Pipeline (GitHub Actions)
 
@@ -516,15 +516,15 @@ Every collection has explicit, deny-by-default rules. Representative pattern for
 
 match /users/{userId}/activities/{activityId} {
 
-  allow read: if request.auth != null && request.auth.uid == userId;
+allow read: if request.auth != null && request.auth.uid == userId;
 
-  allow create: if request.auth != null && request.auth.uid == userId
+allow create: if request.auth != null && request.auth.uid == userId
 
                 && request.resource.data.keys().hasOnly([...allowedFields])
 
                 && request.resource.data.co2eKg is number;
 
-  allow update, delete: if request.auth != null && request.auth.uid == userId;
+allow update, delete: if request.auth != null && request.auth.uid == userId;
 
 }
 
@@ -532,9 +532,9 @@ match /users/{userId}/activities/{activityId} {
 
 match /emissionFactors/{docId} {
 
-  allow read: if true;
+allow read: if true;
 
-  allow write: if false; // only Cloud Functions with Admin SDK can write
+allow write: if false; // only Cloud Functions with Admin SDK can write
 
 }
 
@@ -744,27 +744,27 @@ Representative Firestore collection structure (simplified):
 
 users/{userId}
 
-  profile: { city, state, dietType, householdSize, createdAt }
+profile: { city, state, dietType, householdSize, createdAt }
 
-  activities/{activityId}
+activities/{activityId}
 
     { category, subType, quantity, unit, co2eKg, source: 'manual'|'ai_parsed'|'bill_ocr', factorVersion, loggedAt }
 
-  dailySummaries/{date}
+dailySummaries/{date}
 
     { totalCo2eKg, byCategory: {...}, factorVersion }
 
-  weeklySummaries/{weekId}
+weeklySummaries/{weekId}
 
     { totalCo2eKg, deltaFromPriorWeek, topCategory }
 
 emissionFactors/{factorSetVersion}
 
-  { transport: {...}, electricity: { byState: {...} }, cookingFuel: {...}, diet: {...}, effectiveFrom }
+{ transport: {...}, electricity: { byState: {...} }, cookingFuel: {...}, diet: {...}, effectiveFrom }
 
 cohortLeaderboard/{cohortKey}
 
-  { bucketedAverages: [...], memberCountApprox, lastComputedAt }  // write-only via Cloud Function
+{ bucketedAverages: [...], memberCountApprox, lastComputedAt } // write-only via Cloud Function
 
 14. Risks & Mitigations
 

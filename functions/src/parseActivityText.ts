@@ -40,23 +40,23 @@ export const parseActivityText = onCall({ secrets: ["GEMINI_API_KEY"] }, async (
               items: {
                 type: SchemaType.OBJECT,
                 properties: {
-                  category: { 
-                    type: SchemaType.STRING, 
+                  category: {
+                    type: SchemaType.STRING,
                     enum: ["transport", "electricity", "cooking", "diet", "consumption"],
-                    format: "enum"
+                    format: "enum",
                   },
                   subType: { type: SchemaType.STRING },
                   quantity: { type: SchemaType.NUMBER },
                   unit: { type: SchemaType.STRING },
-                  note: { type: SchemaType.STRING }
+                  note: { type: SchemaType.STRING },
                 },
-                required: ["category", "subType", "quantity", "unit", "note"]
-              }
-            }
+                required: ["category", "subType", "quantity", "unit", "note"],
+              },
+            },
           },
-          required: ["activities"]
-        }
-      }
+          required: ["activities"],
+        },
+      },
     });
 
     const prompt = `You are a carbon footprint activity parser for the Indian market.
@@ -71,7 +71,6 @@ User log: "${text}"`;
 
     const parsedJson = JSON.parse(responseText);
     return { activities: parsedJson.activities };
-
   } catch (error: unknown) {
     const err = error as Error;
     console.error("Gemini Cloud Function parse failed:", err);

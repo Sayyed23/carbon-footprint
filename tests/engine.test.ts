@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert";
-import { 
-  getGridFactor, 
-  calculateTransportEmissions, 
-  calculateElectricityEmissions, 
-  calculateCookingEmissions, 
-  calculateDietEmissions, 
-  calculateConsumptionEmissions
+import {
+  getGridFactor,
+  calculateTransportEmissions,
+  calculateElectricityEmissions,
+  calculateCookingEmissions,
+  calculateDietEmissions,
+  calculateConsumptionEmissions,
 } from "../lib/emissions/engine";
 
 test("Emission Factor Engine - Grid Factors", () => {
@@ -16,9 +16,9 @@ test("Emission Factor Engine - Grid Factors", () => {
 
   // Region-specific Combined Margin factors (v20.0 CEA)
   assert.strictEqual(getGridFactor("Maharashtra"), 0.74); // western region
-  assert.strictEqual(getGridFactor("Karnataka"), 0.63);   // southern region (high renewables)
+  assert.strictEqual(getGridFactor("Karnataka"), 0.63); // southern region (high renewables)
   assert.strictEqual(getGridFactor("West Bengal"), 0.78); // eastern region (coal heavy)
-  assert.strictEqual(getGridFactor("Delhi"), 0.71);       // northern region
+  assert.strictEqual(getGridFactor("Delhi"), 0.71); // northern region
   assert.strictEqual(getGridFactor("Himachal Pradesh"), 0.52); // hydro heavy
 });
 

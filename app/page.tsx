@@ -1,7 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Leaf, ArrowRight, BarChart3, MessageSquare, Zap, ShieldCheck, Trophy, Sparkles } from "lucide-react";
+import {
+  Leaf,
+  ArrowRight,
+  BarChart3,
+  MessageSquare,
+  Zap,
+  ShieldCheck,
+  Trophy,
+  Sparkles,
+} from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 export default function Home() {
@@ -29,8 +38,9 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
-            Most carbon calculators use Western standards. EcoTrace uses India-specific grid mixes, 
-            commute profiles, LPG cylinders, and local diets for accurate personal carbon accounting.
+            Most carbon calculators use Western standards. EcoTrace uses India-specific grid mixes,
+            commute profiles, LPG cylinders, and local diets for accurate personal carbon
+            accounting.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -59,7 +69,8 @@ export default function Home() {
               Why EcoTrace is Different
             </h2>
             <p className="text-muted-foreground mt-4 text-md">
-              A carbon tracker tailored to Indian lifestyles, unified power grids, and natural-language interactions.
+              A carbon tracker tailored to Indian lifestyles, unified power grids, and
+              natural-language interactions.
             </p>
           </div>
 
@@ -72,7 +83,9 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Indian Emission Database</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Engineered with state-by-state electricity grid combined margins (average ~0.71 kg/kWh), двухколёсными (scooter/auto) transport factors, and regional Indian diets.
+                  Engineered with state-by-state electricity grid combined margins (average ~0.71
+                  kg/kWh), двухколёсными (scooter/auto) transport factors, and regional Indian
+                  diets.
                 </p>
               </div>
             </div>
@@ -85,7 +98,9 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Conversational Logging</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  No tedious spreadsheets. Simply type or record in plain Hinglish: <i>&quot;Rode my scooter for 12 km and ate veg thali.&quot;</i> Gemini parses it instantly into activities.
+                  No tedious spreadsheets. Simply type or record in plain Hinglish:{" "}
+                  <i>&quot;Rode my scooter for 12 km and ate veg thali.&quot;</i> Gemini parses it
+                  instantly into activities.
                 </p>
               </div>
             </div>
@@ -98,7 +113,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Bill Upload Parser</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Snap a photo of your electricity bill. Gemini Vision extracts the consumed units (kWh), matches it to your regional grid factor, and updates your dashboard.
+                  Snap a photo of your electricity bill. Gemini Vision extracts the consumed units
+                  (kWh), matches it to your regional grid factor, and updates your dashboard.
                 </p>
               </div>
             </div>
@@ -111,7 +127,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Privacy & Minimization</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  We collect data at state-level granularity (no GPS logs), auto-delete utility bill images after 7 days, and support one-click account deletion and data export.
+                  We collect data at state-level granularity (no GPS logs), auto-delete utility bill
+                  images after 7 days, and support one-click account deletion and data export.
                 </p>
               </div>
             </div>
@@ -124,7 +141,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Gamified Badges & Cohorts</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Earn credentials for logging streaks and completed reduction activities. Safely compare progress in anonymized regional cohorts without shaming.
+                  Earn credentials for logging streaks and completed reduction activities. Safely
+                  compare progress in anonymized regional cohorts without shaming.
                 </p>
               </div>
             </div>
@@ -137,7 +155,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Grounded Carbon Coach</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  Receive personalized, specific weekly coaching grounded in your logged habits. No vague generalities — get actionable, regional tips.
+                  Receive personalized, specific weekly coaching grounded in your logged habits. No
+                  vague generalities — get actionable, regional tips.
                 </p>
               </div>
             </div>
@@ -154,8 +173,12 @@ export default function Home() {
             <span>© 2026. All rights reserved.</span>
           </div>
           <div className="flex gap-4">
-            <Link href="/awareness" className="hover:text-foreground">Awareness Hub</Link>
-            <Link href="/calculator" className="hover:text-foreground">Quick Calculator</Link>
+            <Link href="/awareness" className="hover:text-foreground">
+              Awareness Hub
+            </Link>
+            <Link href="/calculator" className="hover:text-foreground">
+              Quick Calculator
+            </Link>
           </div>
         </div>
       </footer>

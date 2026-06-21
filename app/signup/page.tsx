@@ -6,7 +6,17 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { signUpUser, signInWithGoogle } from "@/lib/firebase/authService";
 import { saveUserProfile, addActivity, UserProfile } from "@/lib/firebase/db";
-import { Leaf, Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, MapPin, Utensils, Users } from "lucide-react";
+import {
+  Leaf,
+  Mail,
+  Lock,
+  AlertCircle,
+  ArrowRight,
+  ShieldCheck,
+  MapPin,
+  Utensils,
+  Users,
+} from "lucide-react";
 import { DEFAULT_EMISSION_FACTORS } from "@/lib/emissions/engine";
 
 interface GuestCalculations {
@@ -27,7 +37,7 @@ interface GuestCalculations {
 
 function SignUpForm() {
   const router = useRouter();
-  
+
   // Account Form State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +48,7 @@ function SignUpForm() {
   const [state, setState] = useState("Maharashtra");
   const [dietType, setDietType] = useState<UserProfile["dietType"]>("vegetarian");
   const [householdSize, setHouseholdSize] = useState(4);
-  
+
   const [hasGuestData, setHasGuestData] = useState(false);
   const [guestData, setGuestData] = useState<GuestCalculations | null>(null);
 
@@ -125,7 +135,7 @@ function SignUpForm() {
     if (hasGuestData && guestData && guestData.calculatedResults) {
       const results = guestData.calculatedResults;
       const today = new Date();
-      
+
       // Divide weekly transport to a single day log
       await addActivity(uid, {
         category: "transport",
@@ -136,33 +146,33 @@ function SignUpForm() {
         source: "manual",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: today,
-        note: "Initial commute log migrated from onboarding calculator"
+        note: "Initial commute log migrated from onboarding calculator",
       });
 
       // Log daily electricity
       await addActivity(uid, {
         category: "electricity",
         subType: "grid",
-        quantity: Number(((guestData.electricityBill / 7.5) / 30).toFixed(1)),
+        quantity: Number((guestData.electricityBill / 7.5 / 30).toFixed(1)),
         unit: "kWh",
         co2eKg: Number((results.electricity / 365).toFixed(2)),
         source: "manual",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: today,
-        note: "Initial electricity log migrated from onboarding calculator"
+        note: "Initial electricity log migrated from onboarding calculator",
       });
 
       // Log daily cooking
       await addActivity(uid, {
         category: "cooking",
         subType: "lpg_cylinder",
-        quantity: Number(((10 / 365) / userHousehold).toFixed(3)),
+        quantity: Number((10 / 365 / userHousehold).toFixed(3)),
         unit: "cylinder",
         co2eKg: Number((results.cooking / 365).toFixed(2)),
         source: "manual",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: today,
-        note: "Initial cooking fuel log migrated from onboarding calculator"
+        note: "Initial cooking fuel log migrated from onboarding calculator",
       });
 
       // Log daily diet
@@ -175,7 +185,7 @@ function SignUpForm() {
         source: "manual",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: today,
-        note: "Initial diet log migrated from onboarding calculator"
+        note: "Initial diet log migrated from onboarding calculator",
       });
 
       // Clear guest data from session storage
@@ -195,8 +205,8 @@ function SignUpForm() {
         </span>
         <h1 className="text-2xl font-bold tracking-tight">Create your EcoTrace Account</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          {hasGuestData 
-            ? "Save your baseline calculation and unlock daily tracking" 
+          {hasGuestData
+            ? "Save your baseline calculation and unlock daily tracking"
             : "Start tracking and reducing your carbon footprint"}
         </p>
       </div>
@@ -212,7 +222,9 @@ function SignUpForm() {
         {/* Account Credentials */}
         <div className="space-y-3">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="email">Email address</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="email">
+              Email address
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <input
@@ -228,7 +240,9 @@ function SignUpForm() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="password">Password</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="password">
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <input
@@ -247,8 +261,10 @@ function SignUpForm() {
         {/* Profile configuration (shown only if NO guest data exists) */}
         {!hasGuestData && (
           <div className="border-t border-border pt-4 mt-2 space-y-4">
-            <span className="text-xs font-bold text-muted-foreground uppercase block">Profile Customization</span>
-            
+            <span className="text-xs font-bold text-muted-foreground uppercase block">
+              Profile Customization
+            </span>
+
             <div className="space-y-1">
               <label htmlFor="pstate" className="flex items-center gap-1.5 text-sm font-semibold">
                 <MapPin className="h-4 w-4 text-primary" /> State
@@ -260,7 +276,9 @@ function SignUpForm() {
                 className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {statesList.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
             </div>
@@ -284,7 +302,10 @@ function SignUpForm() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="phousehold" className="flex items-center gap-1.5 text-sm font-semibold">
+              <label
+                htmlFor="phousehold"
+                className="flex items-center gap-1.5 text-sm font-semibold"
+              >
                 <Users className="h-4 w-4 text-primary" /> Household Size
               </label>
               <input
@@ -304,7 +325,9 @@ function SignUpForm() {
           <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-2.5 text-xs text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>
-              We detected your calculator results! Your baseline and profile state (<strong>{guestData.state}</strong>) will be migrated to your account profile automatically.
+              We detected your calculator results! Your baseline and profile state (
+              <strong>{guestData.state}</strong>) will be migrated to your account profile
+              automatically.
             </p>
           </div>
         )}
@@ -322,7 +345,9 @@ function SignUpForm() {
       {/* Social Sign In */}
       <div className="relative flex py-4 items-center">
         <div className="flex-grow border-t border-border"></div>
-        <span className="flex-shrink mx-3 text-muted-foreground text-xs font-semibold uppercase">Or continue with</span>
+        <span className="flex-shrink mx-3 text-muted-foreground text-xs font-semibold uppercase">
+          Or continue with
+        </span>
         <div className="flex-grow border-t border-border"></div>
       </div>
 
@@ -357,12 +382,16 @@ export default function SignUpPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
       <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <Suspense fallback={
-          <div className="w-full max-w-md glass p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center min-h-[400px]">
-            <Leaf className="h-10 w-10 text-primary animate-bounce mb-3" />
-            <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">Loading registration...</p>
-          </div>
-        }>
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md glass p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center min-h-[400px]">
+              <Leaf className="h-10 w-10 text-primary animate-bounce mb-3" />
+              <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+                Loading registration...
+              </p>
+            </div>
+          }
+        >
           <SignUpForm />
         </Suspense>
       </main>

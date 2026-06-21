@@ -8,8 +8,12 @@ const mockStore: { [key: string]: string } = {};
 global.window = {} as unknown as Window & typeof globalThis;
 global.localStorage = {
   getItem: (key: string) => mockStore[key] || null,
-  setItem: (key: string, value: string) => { mockStore[key] = value; },
-  removeItem: (key: string) => { delete mockStore[key]; },
+  setItem: (key: string, value: string) => {
+    mockStore[key] = value;
+  },
+  removeItem: (key: string) => {
+    delete mockStore[key];
+  },
   clear: () => {
     Object.keys(mockStore).forEach((key) => {
       delete mockStore[key];
@@ -19,7 +23,8 @@ global.localStorage = {
   key: () => null,
 };
 
-(global.window as unknown as { dispatchEvent: (event: Event) => boolean }).dispatchEvent = (_event: Event) => true;
+(global.window as unknown as { dispatchEvent: (event: Event) => boolean }).dispatchEvent = () =>
+  true;
 
 import type { UserProfile, Activity } from "../lib/firebase/db";
 
@@ -63,11 +68,11 @@ test("Database Service Mock Mode - Activities & Rebuild Summaries", async () => 
   localStorage.clear();
 
   const userId = "usr_888";
-  
+
   // Date in a specific week
   const date1 = new Date("2026-06-20T12:00:00Z"); // Saturday
   const date2 = new Date("2026-06-21T12:00:00Z"); // Sunday
-  
+
   const act1: Omit<Activity, "id"> = {
     category: "transport",
     subType: "2w_petrol",
@@ -134,7 +139,7 @@ test("Database Service Mock Mode - Subscriptions", async () => {
   const { subscribeToActivities, addActivity } = await import("../lib/firebase/db");
   localStorage.clear();
   const userId = "usr_777";
-  
+
   let calledCount = 0;
   let lastActivities: Activity[] = [];
 
@@ -144,7 +149,7 @@ test("Database Service Mock Mode - Subscriptions", async () => {
   });
 
   // wait for the initial fetch to resolve
-  await new Promise(resolve => setTimeout(resolve, 10));
+  await new Promise((resolve) => setTimeout(resolve, 10));
 
   // subscription callback runs initially
   assert.strictEqual(calledCount, 1);
@@ -163,7 +168,7 @@ test("Database Service Mock Mode - Subscriptions", async () => {
   });
 
   // wait for the subscription callback to fire
-  await new Promise(resolve => setTimeout(resolve, 10));
+  await new Promise((resolve) => setTimeout(resolve, 10));
 
   assert.strictEqual(calledCount, 2);
   assert.strictEqual(lastActivities.length, 1);

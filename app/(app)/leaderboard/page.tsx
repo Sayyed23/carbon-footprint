@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import Navbar from "@/components/Navbar";
-import { Trophy, Leaf, MapPin, Users, Utensils, Award, ShieldAlert, ArrowRight } from "lucide-react";
+import { Trophy, Leaf, Users, ShieldAlert } from "lucide-react";
 
 interface LeaderboardEntry {
   rank: number;
@@ -16,7 +16,7 @@ interface LeaderboardEntry {
 
 export default function LeaderboardPage() {
   const router = useRouter();
-  const { user, profile, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   // Redirect if not logged in
   useEffect(() => {
@@ -28,21 +28,93 @@ export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState<"regional" | "diet">("regional");
 
   const regionalCohorts: LeaderboardEntry[] = [
-    { rank: 1, cohort: "Himachal Pradesh Grid Cohort", memberCount: 156, averageWeeklyCo2e: 18.5, status: "low" },
-    { rank: 2, cohort: "Southern Grid Renewables Cohort (Karnataka/TN)", memberCount: 420, averageWeeklyCo2e: 22.1, status: "low" },
-    { rank: 3, cohort: "Maharashtra Professionals Cohort", memberCount: 890, averageWeeklyCo2e: 31.4, status: "average" },
-    { rank: 4, cohort: "National Average Baseline (India)", memberCount: 1540, averageWeeklyCo2e: 36.5, status: "average" },
-    { rank: 5, cohort: "Delhi/NCR Urban Commuter Cohort", memberCount: 650, averageWeeklyCo2e: 45.2, status: "high" },
-    { rank: 6, cohort: "East Zone Coal-Heavy Grid Cohort (WB/Odisha)", memberCount: 310, averageWeeklyCo2e: 48.9, status: "high" },
+    {
+      rank: 1,
+      cohort: "Himachal Pradesh Grid Cohort",
+      memberCount: 156,
+      averageWeeklyCo2e: 18.5,
+      status: "low",
+    },
+    {
+      rank: 2,
+      cohort: "Southern Grid Renewables Cohort (Karnataka/TN)",
+      memberCount: 420,
+      averageWeeklyCo2e: 22.1,
+      status: "low",
+    },
+    {
+      rank: 3,
+      cohort: "Maharashtra Professionals Cohort",
+      memberCount: 890,
+      averageWeeklyCo2e: 31.4,
+      status: "average",
+    },
+    {
+      rank: 4,
+      cohort: "National Average Baseline (India)",
+      memberCount: 1540,
+      averageWeeklyCo2e: 36.5,
+      status: "average",
+    },
+    {
+      rank: 5,
+      cohort: "Delhi/NCR Urban Commuter Cohort",
+      memberCount: 650,
+      averageWeeklyCo2e: 45.2,
+      status: "high",
+    },
+    {
+      rank: 6,
+      cohort: "East Zone Coal-Heavy Grid Cohort (WB/Odisha)",
+      memberCount: 310,
+      averageWeeklyCo2e: 48.9,
+      status: "high",
+    },
   ];
 
   const dietCohorts: LeaderboardEntry[] = [
-    { rank: 1, cohort: "Vegan Diet Cohort (All India)", memberCount: 88, averageWeeklyCo2e: 7.7, status: "low" },
-    { rank: 2, cohort: "South Indian Vegetarian Cohort", memberCount: 340, averageWeeklyCo2e: 11.2, status: "low" },
-    { rank: 3, cohort: "Typical Indian Vegetarian Cohort", memberCount: 1100, averageWeeklyCo2e: 11.5, status: "low" },
-    { rank: 4, cohort: "Eggetarian Diet Cohort", memberCount: 290, averageWeeklyCo2e: 13.3, status: "average" },
-    { rank: 5, cohort: "Moderate Non-Vegetarian Cohort", memberCount: 780, averageWeeklyCo2e: 19.6, status: "average" },
-    { rank: 6, cohort: "Frequent Non-Vegetarian Cohort (High Red Meat/Mutton)", memberCount: 410, averageWeeklyCo2e: 31.5, status: "high" },
+    {
+      rank: 1,
+      cohort: "Vegan Diet Cohort (All India)",
+      memberCount: 88,
+      averageWeeklyCo2e: 7.7,
+      status: "low",
+    },
+    {
+      rank: 2,
+      cohort: "South Indian Vegetarian Cohort",
+      memberCount: 340,
+      averageWeeklyCo2e: 11.2,
+      status: "low",
+    },
+    {
+      rank: 3,
+      cohort: "Typical Indian Vegetarian Cohort",
+      memberCount: 1100,
+      averageWeeklyCo2e: 11.5,
+      status: "low",
+    },
+    {
+      rank: 4,
+      cohort: "Eggetarian Diet Cohort",
+      memberCount: 290,
+      averageWeeklyCo2e: 13.3,
+      status: "average",
+    },
+    {
+      rank: 5,
+      cohort: "Moderate Non-Vegetarian Cohort",
+      memberCount: 780,
+      averageWeeklyCo2e: 19.6,
+      status: "average",
+    },
+    {
+      rank: 6,
+      cohort: "Frequent Non-Vegetarian Cohort (High Red Meat/Mutton)",
+      memberCount: 410,
+      averageWeeklyCo2e: 31.5,
+      status: "high",
+    },
   ];
 
   if (loading || !user) {
@@ -51,7 +123,9 @@ export default function LeaderboardPage() {
         <span className="p-3 bg-primary/10 text-primary rounded-full animate-bounce mb-3">
           <Leaf className="h-8 w-8" />
         </span>
-        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">Loading Leaderboard...</p>
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Loading Leaderboard...
+        </p>
       </div>
     );
   }
@@ -61,9 +135,8 @@ export default function LeaderboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-12 space-y-8">
-        
         {/* Page Header */}
         <div className="text-center max-w-2xl mx-auto">
           <div className="p-3 bg-primary/10 text-primary rounded-2xl w-fit mx-auto mb-4">
@@ -71,7 +144,8 @@ export default function LeaderboardPage() {
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">Anonymized Cohort Leaderboard</h1>
           <p className="text-muted-foreground mt-2 text-md">
-            Compare carbon aggregates across regional grid zones and dietary patterns in India. No individual data is ever shared or exposed.
+            Compare carbon aggregates across regional grid zones and dietary patterns in India. No
+            individual data is ever shared or exposed.
           </p>
         </div>
 
@@ -81,7 +155,9 @@ export default function LeaderboardPage() {
           <div>
             <span className="font-bold text-foreground">Privacy Protection Enforced</span>
             <p className="mt-0.5">
-              To prevent personal shaming, EcoTrace does not maintain individual-to-individual leaderboards. Rankings reflect anonymized cohort averages calculated nightly. Streaks are awarded for logging consistency rather than absolute footprints.
+              To prevent personal shaming, EcoTrace does not maintain individual-to-individual
+              leaderboards. Rankings reflect anonymized cohort averages calculated nightly. Streaks
+              are awarded for logging consistency rather than absolute footprints.
             </p>
           </div>
         </div>
@@ -114,21 +190,26 @@ export default function LeaderboardPage() {
         <div className="max-w-3xl mx-auto glass border border-border rounded-2xl shadow-xl overflow-hidden">
           <div className="divide-y divide-border">
             {cohorts.map((cohort) => (
-              <div 
-                key={cohort.rank} 
+              <div
+                key={cohort.rank}
                 className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 py-5 hover:bg-muted/20 gap-4"
               >
                 <div className="flex items-center gap-4">
                   {/* Rank indicator */}
-                  <span className={`h-8 w-8 rounded-full flex items-center justify-center font-black text-sm shrink-0 ${
-                    cohort.rank === 1 ? "bg-amber-500/20 text-amber-600 dark:text-amber-500" :
-                    cohort.rank === 2 ? "bg-slate-400/20 text-slate-500" :
-                    cohort.rank === 3 ? "bg-orange-400/20 text-orange-500" :
-                    "bg-muted text-muted-foreground"
-                  }`}>
+                  <span
+                    className={`h-8 w-8 rounded-full flex items-center justify-center font-black text-sm shrink-0 ${
+                      cohort.rank === 1
+                        ? "bg-amber-500/20 text-amber-600 dark:text-amber-500"
+                        : cohort.rank === 2
+                          ? "bg-slate-400/20 text-slate-500"
+                          : cohort.rank === 3
+                            ? "bg-orange-400/20 text-orange-500"
+                            : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     #{cohort.rank}
                   </span>
-                  
+
                   <div>
                     <span className="font-bold text-sm text-foreground">{cohort.cohort}</span>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
@@ -141,23 +222,34 @@ export default function LeaderboardPage() {
 
                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                   <div className="text-left sm:text-right">
-                    <span className="text-sm font-bold text-foreground block">{cohort.averageWeeklyCo2e} kg CO2e</span>
-                    <span className="text-[10px] text-muted-foreground uppercase font-bold">weekly average</span>
+                    <span className="text-sm font-bold text-foreground block">
+                      {cohort.averageWeeklyCo2e} kg CO2e
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                      weekly average
+                    </span>
                   </div>
 
-                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase ${
-                    cohort.status === "low" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
-                    cohort.status === "average" ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" :
-                    "bg-red-500/10 text-red-600 dark:text-red-400"
-                  }`}>
-                    {cohort.status === "low" ? "Low Impact" : cohort.status === "average" ? "Moderate" : "High Impact"}
+                  <span
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase ${
+                      cohort.status === "low"
+                        ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : cohort.status === "average"
+                          ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                          : "bg-red-500/10 text-red-600 dark:text-red-400"
+                    }`}
+                  >
+                    {cohort.status === "low"
+                      ? "Low Impact"
+                      : cohort.status === "average"
+                        ? "Moderate"
+                        : "High Impact"}
                   </span>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
       </main>
     </div>
   );

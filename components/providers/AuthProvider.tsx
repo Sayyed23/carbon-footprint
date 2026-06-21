@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       // Standard Firebase Authentication
       if (!auth) {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 0);
         return;
       }
       const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {

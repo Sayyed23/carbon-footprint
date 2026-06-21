@@ -3,29 +3,22 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { saveUserProfile, getActivities, deleteActivity, UserProfile } from "@/lib/firebase/db";
+import { saveUserProfile, getActivities, UserProfile } from "@/lib/firebase/db";
 import { auth, db, isMockMode } from "@/lib/firebase/config";
 import { deleteUser } from "firebase/auth";
-import { 
-  collection, 
-  getDocs, 
-  deleteDoc, 
-  doc 
-} from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { DEFAULT_EMISSION_FACTORS } from "@/lib/emissions/engine";
 import Navbar from "@/components/Navbar";
-import { 
-  User, 
-  MapPin, 
-  Utensils, 
-  Users, 
-  Download, 
-  Trash2, 
-  AlertTriangle, 
-  Check, 
+import {
+  User,
+  MapPin,
+  Utensils,
+  Users,
+  Download,
+  Trash2,
+  AlertTriangle,
+  Check,
   Leaf,
-  ShieldCheck,
-  ShieldX
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -43,7 +36,7 @@ export default function SettingsPage() {
   const [state, setState] = useState("Maharashtra");
   const [dietType, setDietType] = useState<UserProfile["dietType"]>("vegetarian");
   const [householdSize, setHouseholdSize] = useState(4);
-  
+
   const [updating, setUpdating] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -69,7 +62,9 @@ export default function SettingsPage() {
         <span className="p-3 bg-primary/10 text-primary rounded-full animate-bounce mb-3">
           <Leaf className="h-8 w-8" />
         </span>
-        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">Loading Settings...</p>
+        <p className="text-sm font-semibold tracking-wide text-muted-foreground animate-pulse">
+          Loading Settings...
+        </p>
       </div>
     );
   }
@@ -101,16 +96,24 @@ export default function SettingsPage() {
   const handleExportData = async () => {
     try {
       const logs = await getActivities(user.uid);
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-        email: user.email,
-        profile: {
-          state: profile?.state,
-          dietType: profile?.dietType,
-          householdSize: profile?.householdSize
-        },
-        logs: logs
-      }, null, 2));
-      
+      const dataStr =
+        "data:text/json;charset=utf-8," +
+        encodeURIComponent(
+          JSON.stringify(
+            {
+              email: user.email,
+              profile: {
+                state: profile?.state,
+                dietType: profile?.dietType,
+                householdSize: profile?.householdSize,
+              },
+              logs: logs,
+            },
+            null,
+            2
+          )
+        );
+
       const downloadAnchor = document.createElement("a");
       downloadAnchor.setAttribute("href", dataStr);
       downloadAnchor.setAttribute("download", `ecotrace_carbon_data_${user.uid.slice(0, 6)}.json`);
@@ -186,7 +189,9 @@ export default function SettingsPage() {
       const error = err as Error & { code?: string };
       console.error("Account deletion failed:", error);
       if (error.code === "auth/requires-recent-login") {
-        setErrorMsg("This action requires a recent authentication login. Please log out, sign in again, and attempt deletion immediately.");
+        setErrorMsg(
+          "This action requires a recent authentication login. Please log out, sign in again, and attempt deletion immediately."
+        );
       } else {
         setErrorMsg(error.message || "Wiping database failed. Account status unchanged.");
       }
@@ -199,11 +204,12 @@ export default function SettingsPage() {
       <Navbar />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 space-y-8">
-        
         {/* Page Header */}
         <div className="border-b border-border pb-4">
           <h1 className="text-3xl font-extrabold tracking-tight">Account Settings</h1>
-          <p className="text-muted-foreground mt-1">Manage your carbon profile, export your history, or control your private data.</p>
+          <p className="text-muted-foreground mt-1">
+            Manage your carbon profile, export your history, or control your private data.
+          </p>
         </div>
 
         {successMsg && (
@@ -239,7 +245,9 @@ export default function SettingsPage() {
                   className="w-full bg-muted/50 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none"
                 >
                   {statesList.map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -296,7 +304,8 @@ export default function SettingsPage() {
                 <Download className="h-5 w-5 text-primary" /> Data Portability (Export Logs)
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Download a complete, raw backup file containing your profile parameters and entire logged activity history in JSON format.
+                Download a complete, raw backup file containing your profile parameters and entire
+                logged activity history in JSON format.
               </p>
             </div>
             <button
@@ -314,12 +323,17 @@ export default function SettingsPage() {
             <Trash2 className="h-5 w-5" /> Danger Zone: Delete Account
           </h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Deleting your account will permanently wipe your profile records, transport, energy, food, and consumption activity logs, and remove your authentication credentials. This action cannot be reversed.
+            Deleting your account will permanently wipe your profile records, transport, energy,
+            food, and consumption activity logs, and remove your authentication credentials. This
+            action cannot be reversed.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-end max-w-md border-t border-destructive/10 pt-4 mt-2">
             <div className="flex-grow w-full space-y-1">
-              <label className="text-xs text-muted-foreground font-semibold uppercase block" htmlFor="delete-confirm">
+              <label
+                className="text-xs text-muted-foreground font-semibold uppercase block"
+                htmlFor="delete-confirm"
+              >
                 Type &quot;DELETE&quot; to confirm account termination
               </label>
               <input
@@ -341,7 +355,6 @@ export default function SettingsPage() {
             </button>
           </div>
         </div>
-
       </main>
     </div>
   );

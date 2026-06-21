@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+functions/lib/
+functions/node_modules/
+.agents/
+*.docx
+package-lock.json
+functions/package-lock.json

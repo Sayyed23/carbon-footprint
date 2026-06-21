@@ -3,25 +3,25 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import { 
-  MapPin, 
-  Car, 
-  Zap, 
-  Utensils, 
-  Users, 
-  ArrowRight, 
-  ArrowLeft, 
-  CheckCircle2, 
-  Leaf, 
-  Flame, 
+import {
+  MapPin,
+  Car,
+  Zap,
+  Utensils,
+  Users,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Leaf,
+  Flame,
   TrendingDown,
-  Info
+  Info,
 } from "lucide-react";
-import { 
-  DEFAULT_EMISSION_FACTORS, 
-  calculateTransportEmissions, 
-  calculateElectricityEmissions, 
-  calculateDietEmissions 
+import {
+  DEFAULT_EMISSION_FACTORS,
+  calculateTransportEmissions,
+  calculateElectricityEmissions,
+  calculateDietEmissions,
 } from "@/lib/emissions/engine";
 
 export default function CalculatorPage() {
@@ -31,10 +31,12 @@ export default function CalculatorPage() {
 
   // Form State
   const [state, setState] = useState("Maharashtra");
-  const [commuteMode, setCommuteMode] = useState<keyof typeof DEFAULT_EMISSION_FACTORS.transport>("2w_petrol");
+  const [commuteMode, setCommuteMode] =
+    useState<keyof typeof DEFAULT_EMISSION_FACTORS.transport>("2w_petrol");
   const [commuteDistance, setCommuteDistance] = useState(50); // km/week
   const [electricityBill, setElectricityBill] = useState(1500); // Rs./month
-  const [dietType, setDietType] = useState<keyof typeof DEFAULT_EMISSION_FACTORS.diet>("vegetarian");
+  const [dietType, setDietType] =
+    useState<keyof typeof DEFAULT_EMISSION_FACTORS.diet>("vegetarian");
   const [householdSize, setHouseholdSize] = useState(4);
 
   // Result state
@@ -84,7 +86,7 @@ export default function CalculatorPage() {
     const annualCooking = (42.5 * 10) / householdSize;
 
     const total = annualTransport + annualElectricity + annualDiet + annualCooking;
-    
+
     // National average in India is ~1900 kg CO2e per capita per year
     const nationalAvg = 1900;
     const comparison = Math.round(((total - nationalAvg) / nationalAvg) * 100);
@@ -99,21 +101,24 @@ export default function CalculatorPage() {
     });
 
     // Save temporary data in session storage to carry over to Sign Up
-    sessionStorage.setItem("guestCalculations", JSON.stringify({
-      state,
-      commuteMode,
-      commuteDistance,
-      electricityBill,
-      dietType,
-      householdSize,
-      calculatedResults: {
-        transport: Math.round(annualTransport),
-        electricity: Math.round(annualElectricity),
-        diet: Math.round(annualDiet),
-        cooking: Math.round(annualCooking),
-        total: Math.round(total),
-      }
-    }));
+    sessionStorage.setItem(
+      "guestCalculations",
+      JSON.stringify({
+        state,
+        commuteMode,
+        commuteDistance,
+        electricityBill,
+        dietType,
+        householdSize,
+        calculatedResults: {
+          transport: Math.round(annualTransport),
+          electricity: Math.round(annualElectricity),
+          diet: Math.round(annualDiet),
+          cooking: Math.round(annualCooking),
+          total: Math.round(total),
+        },
+      })
+    );
 
     setCalculated(true);
   };
@@ -130,15 +135,21 @@ export default function CalculatorPage() {
           <div className="w-full max-w-xl mx-auto">
             {/* Header */}
             <div className="text-center mb-8">
-              <span className="text-sm font-semibold tracking-wide uppercase text-primary">Onboarding Quiz</span>
-              <h1 className="text-3xl font-extrabold tracking-tight mt-1">Calculate Your Carbon Footprint</h1>
-              <p className="text-muted-foreground mt-2">Get an instant baseline of your ecological impact in India. Takes under 60 seconds.</p>
+              <span className="text-sm font-semibold tracking-wide uppercase text-primary">
+                Onboarding Quiz
+              </span>
+              <h1 className="text-3xl font-extrabold tracking-tight mt-1">
+                Calculate Your Carbon Footprint
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                Get an instant baseline of your ecological impact in India. Takes under 60 seconds.
+              </p>
             </div>
 
             {/* Progress Bar */}
             <div className="w-full bg-secondary h-2 rounded-full overflow-hidden mb-8">
-              <div 
-                className="bg-primary h-full transition-all duration-300 ease-out" 
+              <div
+                className="bg-primary h-full transition-all duration-300 ease-out"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
               />
             </div>
@@ -153,11 +164,15 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Select Your State</h2>
-                      <p className="text-sm text-muted-foreground">{"This helps determine your state's electricity grid carbon intensity."}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {"This helps determine your state's electricity grid carbon intensity."}
+                      </p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="state" className="block text-sm font-semibold">Indian State / Union Territory</label>
+                    <label htmlFor="state" className="block text-sm font-semibold">
+                      Indian State / Union Territory
+                    </label>
                     <select
                       id="state"
                       value={state}
@@ -165,14 +180,18 @@ export default function CalculatorPage() {
                       className="w-full bg-card border border-border rounded-xl px-4 py-3 font-medium focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       {statesList.map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
                       ))}
                     </select>
                   </div>
                   <div className="mt-4 p-4 bg-primary/5 border border-primary/10 rounded-xl flex gap-3 text-sm">
                     <Info className="h-5 w-5 text-primary shrink-0" />
                     <p className="text-muted-foreground leading-relaxed">
-                      Grid emission factors in India range from <strong>0.52 kg CO2/kWh</strong> in hydro-heavy northern states up to <strong>0.78 kg CO2/kWh</strong> in coal-heavy eastern states.
+                      Grid emission factors in India range from <strong>0.52 kg CO2/kWh</strong> in
+                      hydro-heavy northern states up to <strong>0.78 kg CO2/kWh</strong> in
+                      coal-heavy eastern states.
                     </p>
                   </div>
                 </div>
@@ -186,7 +205,9 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Commute & Transport</h2>
-                      <p className="text-sm text-muted-foreground">Tell us how you commuted this past week.</p>
+                      <p className="text-sm text-muted-foreground">
+                        Tell us how you commuted this past week.
+                      </p>
                     </div>
                   </div>
 
@@ -202,9 +223,11 @@ export default function CalculatorPage() {
                       <button
                         key={mode.id}
                         type="button"
-                        onClick={() => setCommuteMode(mode.id as keyof typeof DEFAULT_EMISSION_FACTORS.transport)}
+                        onClick={() =>
+                          setCommuteMode(mode.id as keyof typeof DEFAULT_EMISSION_FACTORS.transport)
+                        }
                         className={`flex flex-col text-left p-4 rounded-xl border transition-all ${
-                          commuteMode === mode.id 
+                          commuteMode === mode.id
                             ? "border-primary bg-primary/5 ring-1 ring-primary"
                             : "border-border hover:bg-muted"
                         }`}
@@ -246,7 +269,9 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Electricity Bill</h2>
-                      <p className="text-sm text-muted-foreground">{"Estimate your household's average monthly electricity bill."}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {"Estimate your household's average monthly electricity bill."}
+                      </p>
                     </div>
                   </div>
 
@@ -272,7 +297,9 @@ export default function CalculatorPage() {
                   </div>
                   <div className="p-4 bg-muted/50 rounded-xl text-center">
                     <p className="text-xs text-muted-foreground">
-                      Roughly translates to <strong>{Math.round(electricityBill / 7.5)} kWh (units)</strong> per month at an average tariff of ₹7.5/unit.
+                      Roughly translates to{" "}
+                      <strong>{Math.round(electricityBill / 7.5)} kWh (units)</strong> per month at
+                      an average tariff of ₹7.5/unit.
                     </p>
                   </div>
                 </div>
@@ -286,24 +313,48 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Dietary Habits</h2>
-                      <p className="text-sm text-muted-foreground">Select the diet category that best describes your meals.</p>
+                      <p className="text-sm text-muted-foreground">
+                        Select the diet category that best describes your meals.
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     {[
-                      { id: "vegan", label: "Vegan", desc: "100% plant-based, no dairy or animal derivatives." },
-                      { id: "vegetarian", label: "Vegetarian", desc: "No meat or eggs; includes dairy (paneer, milk, ghee)." },
-                      { id: "eggetarian", label: "Eggetarian", desc: "Vegetarian diet but includes eggs." },
-                      { id: "non_veg_low", label: "Non-Vegetarian (Moderate)", desc: "Consumes chicken/fish occasional days a week." },
-                      { id: "non_veg_high", label: "Non-Vegetarian (Frequent)", desc: "Consumes meat (including mutton) daily or almost daily." },
+                      {
+                        id: "vegan",
+                        label: "Vegan",
+                        desc: "100% plant-based, no dairy or animal derivatives.",
+                      },
+                      {
+                        id: "vegetarian",
+                        label: "Vegetarian",
+                        desc: "No meat or eggs; includes dairy (paneer, milk, ghee).",
+                      },
+                      {
+                        id: "eggetarian",
+                        label: "Eggetarian",
+                        desc: "Vegetarian diet but includes eggs.",
+                      },
+                      {
+                        id: "non_veg_low",
+                        label: "Non-Vegetarian (Moderate)",
+                        desc: "Consumes chicken/fish occasional days a week.",
+                      },
+                      {
+                        id: "non_veg_high",
+                        label: "Non-Vegetarian (Frequent)",
+                        desc: "Consumes meat (including mutton) daily or almost daily.",
+                      },
                     ].map((diet) => (
                       <button
                         key={diet.id}
                         type="button"
-                        onClick={() => setDietType(diet.id as keyof typeof DEFAULT_EMISSION_FACTORS.diet)}
+                        onClick={() =>
+                          setDietType(diet.id as keyof typeof DEFAULT_EMISSION_FACTORS.diet)
+                        }
                         className={`w-full flex flex-col text-left p-4 rounded-xl border transition-all ${
-                          dietType === diet.id 
+                          dietType === diet.id
                             ? "border-primary bg-primary/5 ring-1 ring-primary"
                             : "border-border hover:bg-muted"
                         }`}
@@ -324,7 +375,9 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Household size</h2>
-                      <p className="text-sm text-muted-foreground">How many people share the household bills and cooking fuel?</p>
+                      <p className="text-sm text-muted-foreground">
+                        How many people share the household bills and cooking fuel?
+                      </p>
                     </div>
                   </div>
 
@@ -345,7 +398,8 @@ export default function CalculatorPage() {
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground text-center">
-                    Shared footprint elements (LPG cylinders, utility bills) will be divided equally.
+                    Shared footprint elements (LPG cylinders, utility bills) will be divided
+                    equally.
                   </p>
                 </div>
               )}
@@ -384,7 +438,9 @@ export default function CalculatorPage() {
               <span className="p-2.5 bg-primary/10 text-primary rounded-full inline-block mb-3">
                 <Leaf className="h-8 w-8 animate-pulse" />
               </span>
-              <h1 className="text-3xl font-extrabold tracking-tight">Your Carbon Footprint Baseline</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">
+                Your Carbon Footprint Baseline
+              </h1>
               <p className="text-muted-foreground mt-1">Based on your quick estimates</p>
             </div>
 
@@ -393,18 +449,21 @@ export default function CalculatorPage() {
               <span className="text-5xl font-black text-primary tracking-tight">
                 {(results!.total / 1000).toFixed(2)}
               </span>
-              <span className="text-sm font-semibold text-muted-foreground mt-1">Tonnes CO2e / Year</span>
-              
+              <span className="text-sm font-semibold text-muted-foreground mt-1">
+                Tonnes CO2e / Year
+              </span>
+
               <div className="mt-4 flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-primary/15 text-primary">
                 <TrendingDown className="h-4 w-4" />
                 <span>
-                  {results!.nationalComparison <= 0 
+                  {results!.nationalComparison <= 0
                     ? `${Math.abs(results!.nationalComparison)}% below Indian national average`
                     : `${results!.nationalComparison}% above Indian national average`}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-3 max-w-sm">
-                Equivalent to driving a typical petrol car for {Math.round(results!.total / 0.143)} km or burning {Math.round(results!.total / 2.99)} kg of LPG fuel.
+                Equivalent to driving a typical petrol car for {Math.round(results!.total / 0.143)}{" "}
+                km or burning {Math.round(results!.total / 2.99)} kg of LPG fuel.
               </p>
             </div>
 
@@ -413,9 +472,24 @@ export default function CalculatorPage() {
               <h2 className="text-lg font-bold border-b border-border pb-2">Category Breakdown</h2>
 
               {[
-                { name: "Commute & Transport", value: results!.transport, color: "bg-blue-500", icon: Car },
-                { name: "Electricity", value: results!.electricity, color: "bg-yellow-500", icon: Zap },
-                { name: "Dietary Choices", value: results!.diet, color: "bg-emerald-500", icon: Utensils },
+                {
+                  name: "Commute & Transport",
+                  value: results!.transport,
+                  color: "bg-blue-500",
+                  icon: Car,
+                },
+                {
+                  name: "Electricity",
+                  value: results!.electricity,
+                  color: "bg-yellow-500",
+                  icon: Zap,
+                },
+                {
+                  name: "Dietary Choices",
+                  value: results!.diet,
+                  color: "bg-emerald-500",
+                  icon: Utensils,
+                },
                 { name: "Cooking Fuel", value: results!.cooking, color: "bg-red-500", icon: Flame },
               ].map((cat) => {
                 const percent = Math.max(2, Math.round((cat.value / results!.total) * 100));
@@ -427,7 +501,9 @@ export default function CalculatorPage() {
                         <Icon className="h-4 w-4 text-muted-foreground" />
                         <span>{cat.name}</span>
                       </div>
-                      <span className="text-muted-foreground">{cat.value} kg CO2e ({percent}%)</span>
+                      <span className="text-muted-foreground">
+                        {cat.value} kg CO2e ({percent}%)
+                      </span>
                     </div>
                     <div className="w-full bg-secondary h-2.5 rounded-full overflow-hidden">
                       <div className={`h-full ${cat.color}`} style={{ width: `${percent}%` }} />
@@ -445,7 +521,8 @@ export default function CalculatorPage() {
                   Save Progress & Log Daily
                 </h3>
                 <p className="text-xs text-muted-foreground max-w-sm">
-                  Sign up now to lock in this baseline, activate your daily conversational logger, and start chatting with the Carbon Coach.
+                  Sign up now to lock in this baseline, activate your daily conversational logger,
+                  and start chatting with the Carbon Coach.
                 </p>
               </div>
               <button

@@ -6,19 +6,18 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { addActivity } from "@/lib/firebase/db";
 import { DEFAULT_EMISSION_FACTORS, getGridFactor } from "@/lib/emissions/engine";
 import Navbar from "@/components/Navbar";
-import { 
-  UploadCloud, 
-  Leaf, 
-  FileText, 
-  AlertCircle, 
-  Check, 
-  X, 
-  Zap, 
-  MapPin, 
+import {
+  UploadCloud,
+  FileText,
+  AlertCircle,
+  Check,
+  X,
+  Zap,
+  MapPin,
   Calendar,
   RotateCcw,
   Sparkles,
-  Info
+  Info,
 } from "lucide-react";
 
 export default function BillScannerPage() {
@@ -34,7 +33,7 @@ export default function BillScannerPage() {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  
+
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
@@ -57,10 +56,10 @@ export default function BillScannerPage() {
     setError(null);
     setWarning(null);
     setExtractedData(null);
-    
+
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      
+
       // Limit file size to 4MB
       if (file.size > 4 * 1024 * 1024) {
         setError("File size exceeds 4MB. Please upload a smaller image.");
@@ -95,8 +94,8 @@ export default function BillScannerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           imageBase64: base64Content,
-          mimeType: mimeType
-        })
+          mimeType: mimeType,
+        }),
       });
 
       const responseData = await res.json();
@@ -115,9 +114,13 @@ export default function BillScannerPage() {
         setConfirmPeriod(data.billingPeriod || "");
         setConfirmUnits(data.unitsKwh || 0);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Bill scan error:", err);
-      setError(err.message || "Failed to parse bill. Please check image quality and try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to parse bill. Please check image quality and try again."
+      );
     } finally {
       setAnalyzing(false);
     }
@@ -138,7 +141,7 @@ export default function BillScannerPage() {
         source: "bill_ocr",
         factorVersion: DEFAULT_EMISSION_FACTORS.version,
         loggedAt: new Date(),
-        note: `Electricity bill for period: ${confirmPeriod} (${confirmState})`
+        note: `Electricity bill for period: ${confirmPeriod} (${confirmState})`,
       });
 
       // Clear state and return to dashboard
@@ -166,7 +169,6 @@ export default function BillScannerPage() {
       <Navbar />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 space-y-8">
-        
         {/* Page Header */}
         <div className="text-center max-w-2xl mx-auto">
           <div className="p-3 bg-primary/10 text-primary rounded-2xl w-fit mx-auto mb-4">
@@ -174,7 +176,8 @@ export default function BillScannerPage() {
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">Utility Bill Scanner</h1>
           <p className="text-muted-foreground mt-2 text-md">
-            Scan your electricity bill using Gemini Vision. It extracts consumed units (kWh) and logs them based on regional grid carbon intensities.
+            Scan your electricity bill using Gemini Vision. It extracts consumed units (kWh) and
+            logs them based on regional grid carbon intensities.
           </p>
         </div>
 
@@ -198,13 +201,10 @@ export default function BillScannerPage() {
             <label className="flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-muted/40 transition-all rounded-3xl p-12 cursor-pointer text-center group">
               <UploadCloud className="h-12 w-12 text-muted-foreground group-hover:text-primary transition-colors mb-4" />
               <span className="font-bold text-sm">Select Bill Image</span>
-              <span className="text-xs text-muted-foreground mt-1">JPEG, PNG, or WebP up to 4MB</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
+              <span className="text-xs text-muted-foreground mt-1">
+                JPEG, PNG, or WebP up to 4MB
+              </span>
+              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
             </label>
           </div>
         )}
@@ -213,13 +213,13 @@ export default function BillScannerPage() {
         {imagePreview && !extractedData && (
           <div className="max-w-xl mx-auto glass p-6 rounded-3xl shadow-xl flex flex-col items-center gap-6">
             <div className="relative w-full max-h-64 rounded-xl overflow-hidden border border-border">
-              <img 
-                src={imagePreview} 
-                alt="Bill Preview" 
+              <img
+                src={imagePreview}
+                alt="Bill Preview"
                 className="object-contain w-full max-h-64 bg-black/5"
               />
             </div>
-            
+
             <div className="flex gap-3 w-full">
               <button
                 onClick={handleReset}
@@ -247,10 +247,11 @@ export default function BillScannerPage() {
                 )}
               </button>
             </div>
-            
+
             {analyzing && (
               <p className="text-xs text-muted-foreground animate-pulse text-center leading-relaxed">
-                Gemini is examining the bill layout, isolating units consumed (kWh), and detecting state-level billing markers.
+                Gemini is examining the bill layout, isolating units consumed (kWh), and detecting
+                state-level billing markers.
               </p>
             )}
           </div>
@@ -261,9 +262,9 @@ export default function BillScannerPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Image Preview Side */}
             <div className="glass p-6 rounded-3xl border border-border shadow-md flex items-center justify-center">
-              <img 
-                src={imagePreview!} 
-                alt="Original Bill Image" 
+              <img
+                src={imagePreview!}
+                alt="Original Bill Image"
                 className="object-contain max-h-[350px] w-full rounded-lg bg-black/5"
               />
             </div>
@@ -274,7 +275,7 @@ export default function BillScannerPage() {
                 <h2 className="text-lg font-bold border-b border-border pb-3 mb-4 flex items-center gap-2">
                   <FileText className="h-5 w-5 text-primary" /> Confirm Extracted Data
                 </h2>
-                
+
                 <div className="space-y-4">
                   {/* State Select */}
                   <div className="space-y-1">
@@ -287,7 +288,9 @@ export default function BillScannerPage() {
                       className="w-full bg-muted/60 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none"
                     >
                       {statesList.map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -329,7 +332,9 @@ export default function BillScannerPage() {
                 </div>
                 <div className="flex justify-between items-center border-t border-border/40 pt-2">
                   <span className="text-sm font-bold">Total Emission Impact</span>
-                  <span className="text-xl font-black text-primary">{currentCalculatedImpact} kg CO2e</span>
+                  <span className="text-xl font-black text-primary">
+                    {currentCalculatedImpact} kg CO2e
+                  </span>
                 </div>
               </div>
 
@@ -353,7 +358,6 @@ export default function BillScannerPage() {
             </div>
           </div>
         )}
-
       </main>
     </div>
   );

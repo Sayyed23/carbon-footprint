@@ -30,7 +30,11 @@ export default function SignInPage() {
     } catch (err: unknown) {
       const error = err as Error & { code?: string };
       console.error("Login error:", error);
-      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+      if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-credential"
+      ) {
         setError("Invalid email address or password.");
       } else {
         setError(error.message || "An error occurred during authentication.");
@@ -82,7 +86,12 @@ export default function SignInPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="email">Email address</label>
+                <label
+                  className="text-xs font-bold text-muted-foreground uppercase"
+                  htmlFor="email"
+                >
+                  Email address
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                   <input
@@ -98,7 +107,12 @@ export default function SignInPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-muted-foreground uppercase" htmlFor="password">Password</label>
+                <label
+                  className="text-xs font-bold text-muted-foreground uppercase"
+                  htmlFor="password"
+                >
+                  Password
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                   <input
@@ -127,7 +141,9 @@ export default function SignInPage() {
           {/* Social Sign In */}
           <div className="relative flex py-4 items-center">
             <div className="flex-grow border-t border-border"></div>
-            <span className="flex-shrink mx-3 text-muted-foreground text-xs font-semibold uppercase">Or continue with</span>
+            <span className="flex-shrink mx-3 text-muted-foreground text-xs font-semibold uppercase">
+              Or continue with
+            </span>
             <div className="flex-grow border-t border-border"></div>
           </div>
 
