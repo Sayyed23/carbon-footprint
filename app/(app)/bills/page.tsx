@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { addActivity } from "@/lib/firebase/db";
 import { DEFAULT_EMISSION_FACTORS, getGridFactor } from "@/lib/emissions/engine";
@@ -198,13 +199,23 @@ export default function BillScannerPage() {
         {/* Upload Container */}
         {!imagePreview && (
           <div className="max-w-xl mx-auto">
-            <label className="flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-muted/40 transition-all rounded-3xl p-12 cursor-pointer text-center group">
+            <label
+              htmlFor="bill-file-input"
+              className="flex flex-col items-center justify-center border-2 border-dashed border-border hover:border-primary/50 bg-card/50 hover:bg-muted/40 transition-all rounded-3xl p-12 cursor-pointer text-center group"
+            >
               <UploadCloud className="h-12 w-12 text-muted-foreground group-hover:text-primary transition-colors mb-4" />
               <span className="font-bold text-sm">Select Bill Image</span>
               <span className="text-xs text-muted-foreground mt-1">
                 JPEG, PNG, or WebP up to 4MB
               </span>
-              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              <input
+                id="bill-file-input"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                aria-label="Select bill image file"
+              />
             </label>
           </div>
         )}
@@ -213,9 +224,12 @@ export default function BillScannerPage() {
         {imagePreview && !extractedData && (
           <div className="max-w-xl mx-auto glass p-6 rounded-3xl shadow-xl flex flex-col items-center gap-6">
             <div className="relative w-full max-h-64 rounded-xl overflow-hidden border border-border">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Bill Preview"
+                unoptimized
+                width={500}
+                height={256}
                 className="object-contain w-full max-h-64 bg-black/5"
               />
             </div>
@@ -224,6 +238,7 @@ export default function BillScannerPage() {
               <button
                 onClick={handleReset}
                 disabled={analyzing}
+                aria-label="Reset bill scanner"
                 className="flex-1 py-3 border border-border hover:bg-muted rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
               >
                 <RotateCcw className="h-4 w-4" />
@@ -232,6 +247,7 @@ export default function BillScannerPage() {
               <button
                 onClick={handleUploadAndAnalyze}
                 disabled={analyzing}
+                aria-label="Scan utility bill"
                 className="flex-1 py-3 bg-primary text-primary-foreground font-semibold rounded-full text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
               >
                 {analyzing ? (
@@ -262,9 +278,12 @@ export default function BillScannerPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Image Preview Side */}
             <div className="glass p-6 rounded-3xl border border-border shadow-md flex items-center justify-center">
-              <img
+              <Image
                 src={imagePreview!}
                 alt="Original Bill Image"
+                unoptimized
+                width={500}
+                height={350}
                 className="object-contain max-h-[350px] w-full rounded-lg bg-black/5"
               />
             </div>

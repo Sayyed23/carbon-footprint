@@ -7,6 +7,7 @@ import {
   calculateCookingEmissions,
   calculateDietEmissions,
   calculateConsumptionEmissions,
+  DEFAULT_EMISSION_FACTORS,
 } from "../lib/emissions/engine";
 
 test("Emission Factor Engine - Grid Factors", () => {
@@ -90,4 +91,47 @@ test("Emission Factor Engine - Consumption/Shopping", () => {
   // 1 Electronic device: 65 kg
   const device = calculateConsumptionEmissions("electronics_device", 1);
   assert.strictEqual(device, 65.0);
+});
+
+test("Emission Factor Engine - Boundary and Edge Cases", () => {
+  // 1. Whitespace normalization in state names
+  assert.strictEqual(getGridFactor("  Maharashtra  "), 0.74);
+  assert.strictEqual(getGridFactor("\nKarnataka\t"), 0.63);
+
+  // 2. Quantities equal to zero
+  assert.strictEqual(calculateTransportEmissions("4w_petrol", 0), 0);
+  assert.strictEqual(calculateElectricityEmissions(0, "Maharashtra"), 0);
+  assert.strictEqual(calculateCookingEmissions("lpg_cylinder", 0), 0);
+  assert.strictEqual(calculateDietEmissions("vegetarian", 0), 0);
+  assert.strictEqual(calculateConsumptionEmissions("delivery_order", 0), 0);
+
+  // 3. Fallback on invalid category types (safety checks using type coercion)
+  assert.strictEqual(
+    calculateTransportEmissions(
+      "non_existent" as unknown as keyof typeof DEFAULT_EMISSION_FACTORS.transport,
+      100
+    ),
+    0
+  );
+  assert.strictEqual(
+    calculateCookingEmissions(
+      "non_existent" as unknown as keyof typeof DEFAULT_EMISSION_FACTORS.cooking,
+      10
+    ),
+    0
+  );
+  assert.strictEqual(
+    calculateDietEmissions(
+      "non_existent" as unknown as keyof typeof DEFAULT_EMISSION_FACTORS.diet,
+      5
+    ),
+    0
+  );
+  assert.strictEqual(
+    calculateConsumptionEmissions(
+      "non_existent" as unknown as keyof typeof DEFAULT_EMISSION_FACTORS.consumption,
+      5
+    ),
+    0
+  );
 });

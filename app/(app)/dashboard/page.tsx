@@ -149,6 +149,14 @@ export default function Dashboard() {
   // Submit manual log
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Please enter a valid positive quantity.");
+      return;
+    }
+    if (quantity > 100000) {
+      alert("Quantity is too large. Please enter a value under 100,000.");
+      return;
+    }
     try {
       const impact = getEstimatedCO2(category, subType, quantity);
 
@@ -404,6 +412,7 @@ export default function Dashboard() {
               onChange={(e) => setAiInput(e.target.value)}
               placeholder="Record your daily footprints..."
               disabled={parsingAi}
+              aria-label="Describe activity in plain English or Hinglish"
               className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
@@ -447,6 +456,7 @@ export default function Dashboard() {
                         setParsedActivities(parsedActivities.filter((_, i) => i !== idx))
                       }
                       className="text-destructive p-1 hover:bg-destructive/10 rounded-md transition-colors"
+                      aria-label="Remove parsed activity"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -590,6 +600,7 @@ export default function Dashboard() {
             <button
               onClick={() => setLogModalOpen(false)}
               className="absolute top-4 right-4 p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"
+              aria-label="Close log activity modal"
             >
               <X className="h-5 w-5" />
             </button>
