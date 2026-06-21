@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "ecotrace-dev",
+    "dev": "ecotrace-dev",
+    "staging": "ecotrace-staging",
+    "prod": "ecotrace-prod"
+  }
+}
