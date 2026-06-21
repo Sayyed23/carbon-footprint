@@ -27,6 +27,40 @@ interface DashboardChartsProps {
   data: ChartDataPoint[];
 }
 
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-card border border-border p-4 rounded-xl shadow-lg text-sm">
+        <p className="font-bold border-b border-border pb-1 mb-2">{label}</p>
+        {payload.map((item) => (
+          <div key={item.name} className="flex justify-between gap-6 py-0.5">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+              <span className="text-muted-foreground">{item.name}</span>
+            </span>
+            <span className="font-bold">{item.value.toFixed(1)} kg CO2e</span>
+          </div>
+        ))}
+        <div className="border-t border-border pt-1 mt-2 flex justify-between font-extrabold text-primary">
+          <span>Total</span>
+          <span>{payload.reduce((sum: number, item) => sum + item.value, 0).toFixed(1)} kg</span>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardCharts({ data }: DashboardChartsProps) {
   // Sort data chronologically for charts
   const sortedData = [...data].sort((a, b) => a.date.localeCompare(b.date));
@@ -39,29 +73,6 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
     );
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-card border border-border p-4 rounded-xl shadow-lg text-sm">
-          <p className="font-bold border-b border-border pb-1 mb-2">{label}</p>
-          {payload.map((item: any) => (
-            <div key={item.name} className="flex justify-between gap-6 py-0.5">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="text-muted-foreground">{item.name}</span>
-              </span>
-              <span className="font-bold">{item.value.toFixed(1)} kg CO2e</span>
-            </div>
-          ))}
-          <div className="border-t border-border pt-1 mt-2 flex justify-between font-extrabold text-primary">
-            <span>Total</span>
-            <span>{payload.reduce((sum: number, item: any) => sum + item.value, 0).toFixed(1)} kg</span>
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">

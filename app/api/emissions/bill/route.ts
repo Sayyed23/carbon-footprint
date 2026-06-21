@@ -63,8 +63,9 @@ Only extract what is present in the image. Return units as a clean number.`;
     const parsedJson = JSON.parse(responseText);
     return NextResponse.json({ data: parsedJson });
 
-  } catch (error: any) {
-    console.error("Utility Bill Vision OCR failed:", error);
-    return NextResponse.json({ error: error.message || "Failed to analyze image" }, { status: 500 });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Utility Bill Vision OCR failed:", err);
+    return NextResponse.json({ error: err.message || "Failed to analyze image" }, { status: 500 });
   }
 }

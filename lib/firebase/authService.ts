@@ -4,10 +4,16 @@ import {
   signInWithPopup, 
   GoogleAuthProvider,
   signOut,
-  User,
   UserCredential
 } from "firebase/auth";
 import { auth, isMockMode } from "./config";
+
+// Interface for simulated user
+export interface MockUser {
+  uid: string;
+  email: string;
+  password?: string;
+}
 
 // Interface for simulated user credential return
 export interface MockUserCredential {
@@ -34,12 +40,12 @@ export async function signUpUser(email: string, password: string): Promise<MockU
     if (typeof window === "undefined") throw new Error("Window is undefined");
     
     const registered = localStorage.getItem("mock_registered_users");
-    const users = registered ? JSON.parse(registered) : [];
+    const users: MockUser[] = registered ? JSON.parse(registered) : [];
     
-    const exists = users.find((u: any) => u.email === email);
+    const exists = users.find((u: MockUser) => u.email === email);
     if (exists) {
       const err = new Error("This email is already in use.");
-      (err as any).code = "auth/email-already-in-use";
+      Object.assign(err, { code: "auth/email-already-in-use" });
       throw err;
     }
     
@@ -54,6 +60,7 @@ export async function signUpUser(email: string, password: string): Promise<MockU
     return { user: { uid, email } } as MockUserCredential;
   }
   
+  if (!auth) throw new Error("Firebase Auth is not initialized");
   return createUserWithEmailAndPassword(auth, email, password);
 }
 
@@ -65,12 +72,12 @@ export async function signInUser(email: string, password: string): Promise<MockU
     if (typeof window === "undefined") throw new Error("Window is undefined");
     
     const registered = localStorage.getItem("mock_registered_users");
-    const users = registered ? JSON.parse(registered) : [];
+    const users: MockUser[] = registered ? JSON.parse(registered) : [];
     
-    const user = users.find((u: any) => u.email === email && u.password === password);
+    const user = users.find((u: MockUser) => u.email === email && u.password === password);
     if (!user) {
       const err = new Error("Invalid credentials.");
-      (err as any).code = "auth/invalid-credential";
+      Object.assign(err, { code: "auth/invalid-credential" });
       throw err;
     }
     
@@ -80,6 +87,7 @@ export async function signInUser(email: string, password: string): Promise<MockU
     return { user: { uid: user.uid, email: user.email } } as MockUserCredential;
   }
   
+  if (!auth) throw new Error("Firebase Auth is not initialized");
   return signInWithEmailAndPassword(auth, email, password);
 }
 
@@ -100,6 +108,7 @@ export async function signInWithGoogle(): Promise<MockUserCredential | UserCrede
     return { user: { uid, email } } as MockUserCredential;
   }
   
+  if (!auth) throw new Error("Firebase Auth is not initialized");
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider);
 }
@@ -115,5 +124,6 @@ export async function logoutUser(): Promise<void> {
     return;
   }
   
+  if (!auth) throw new Error("Firebase Auth is not initialized");
   return signOut(auth);
 }

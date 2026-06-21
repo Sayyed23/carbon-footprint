@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { saveUserProfile, getActivities, deleteActivity } from "@/lib/firebase/db";
+import { saveUserProfile, getActivities, deleteActivity, UserProfile } from "@/lib/firebase/db";
 import { auth, db, isMockMode } from "@/lib/firebase/config";
 import { deleteUser } from "firebase/auth";
 import { 
@@ -41,7 +41,7 @@ export default function SettingsPage() {
 
   // Profile fields state
   const [state, setState] = useState("Maharashtra");
-  const [dietType, setDietType] = useState<any>("vegetarian");
+  const [dietType, setDietType] = useState<UserProfile["dietType"]>("vegetarian");
   const [householdSize, setHouseholdSize] = useState(4);
   
   const [updating, setUpdating] = useState(false);
@@ -54,9 +54,9 @@ export default function SettingsPage() {
 
   const statesList = Object.keys(DEFAULT_EMISSION_FACTORS.electricity.byState).sort();
 
-  // Sync state with profile loaded
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState(profile.state);
       setDietType(profile.dietType);
       setHouseholdSize(profile.householdSize);
@@ -135,42 +135,46 @@ export default function SettingsPage() {
     try {
       const uid = user.uid;
 
-      // 1. Delete all activities in sub-collection
-      const activitiesCol = collection(db, "users", uid, "activities");
-      const actSnapshot = await getDocs(activitiesCol);
-      for (const d of actSnapshot.docs) {
-        await deleteDoc(d.ref);
-      }
-
-      // 2. Delete all daily summaries
-      const dailyCol = collection(db, "users", uid, "dailySummaries");
-      const dailySnap = await getDocs(dailyCol);
-      for (const d of dailySnap.docs) {
-        await deleteDoc(d.ref);
-      }
-
-      // 3. Delete all weekly summaries
-      const weeklyCol = collection(db, "users", uid, "weeklySummaries");
-      const weeklySnap = await getDocs(weeklyCol);
-      for (const d of weeklySnap.docs) {
-        await deleteDoc(d.ref);
-      }
-
-      // 4. Delete user document itself
-      const userRef = doc(db, "users", uid);
-      await deleteDoc(userRef);
-
-      // 5. Delete authentication user
       if (isMockMode) {
         localStorage.removeItem("mock_current_user");
         const registered = localStorage.getItem("mock_registered_users");
         if (registered) {
           const users = JSON.parse(registered);
-          const updatedUsers = users.filter((u: any) => u.uid !== uid);
+          const updatedUsers = users.filter((u: { uid: string }) => u.uid !== uid);
           localStorage.setItem("mock_registered_users", JSON.stringify(updatedUsers));
         }
         window.dispatchEvent(new Event("mock-auth-changed"));
       } else {
+        if (!db || !auth) {
+          throw new Error("Firebase services are not initialized.");
+        }
+
+        // 1. Delete all activities in sub-collection
+        const activitiesCol = collection(db, "users", uid, "activities");
+        const actSnapshot = await getDocs(activitiesCol);
+        for (const d of actSnapshot.docs) {
+          await deleteDoc(d.ref);
+        }
+
+        // 2. Delete all daily summaries
+        const dailyCol = collection(db, "users", uid, "dailySummaries");
+        const dailySnap = await getDocs(dailyCol);
+        for (const d of dailySnap.docs) {
+          await deleteDoc(d.ref);
+        }
+
+        // 3. Delete all weekly summaries
+        const weeklyCol = collection(db, "users", uid, "weeklySummaries");
+        const weeklySnap = await getDocs(weeklyCol);
+        for (const d of weeklySnap.docs) {
+          await deleteDoc(d.ref);
+        }
+
+        // 4. Delete user document itself
+        const userRef = doc(db, "users", uid);
+        await deleteDoc(userRef);
+
+        // 5. Delete authentication user
         const currentUser = auth.currentUser;
         if (currentUser) {
           await deleteUser(currentUser);
@@ -178,12 +182,13 @@ export default function SettingsPage() {
       }
 
       router.push("/");
-    } catch (err: any) {
-      console.error("Account deletion failed:", err);
-      if (err.code === "auth/requires-recent-login") {
+    } catch (err: unknown) {
+      const error = err as Error & { code?: string };
+      console.error("Account deletion failed:", error);
+      if (error.code === "auth/requires-recent-login") {
         setErrorMsg("This action requires a recent authentication login. Please log out, sign in again, and attempt deletion immediately.");
       } else {
-        setErrorMsg(err.message || "Wiping database failed. Account status unchanged.");
+        setErrorMsg(error.message || "Wiping database failed. Account status unchanged.");
       }
       setDeletingAccount(false);
     }
@@ -246,7 +251,7 @@ export default function SettingsPage() {
                 </label>
                 <select
                   value={dietType}
-                  onChange={(e) => setDietType(e.target.value)}
+                  onChange={(e) => setDietType(e.target.value as UserProfile["dietType"])}
                   className="w-full bg-muted/50 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none"
                 >
                   <option value="vegan">Vegan</option>
@@ -315,7 +320,7 @@ export default function SettingsPage() {
           <div className="flex flex-col sm:flex-row gap-4 items-end max-w-md border-t border-destructive/10 pt-4 mt-2">
             <div className="flex-grow w-full space-y-1">
               <label className="text-xs text-muted-foreground font-semibold uppercase block" htmlFor="delete-confirm">
-                Type "DELETE" to confirm account termination
+                Type &quot;DELETE&quot; to confirm account termination
               </label>
               <input
                 id="delete-confirm"

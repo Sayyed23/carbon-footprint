@@ -14,13 +14,11 @@ import {
   CheckCircle2, 
   Leaf, 
   Flame, 
-  ShoppingBag,
   TrendingDown,
   Info
 } from "lucide-react";
 import { 
   DEFAULT_EMISSION_FACTORS, 
-  getGridFactor, 
   calculateTransportEmissions, 
   calculateElectricityEmissions, 
   calculateDietEmissions 
@@ -155,7 +153,7 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Select Your State</h2>
-                      <p className="text-sm text-muted-foreground">This helps determine your state's electricity grid carbon intensity.</p>
+                      <p className="text-sm text-muted-foreground">{"This helps determine your state's electricity grid carbon intensity."}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -204,7 +202,7 @@ export default function CalculatorPage() {
                       <button
                         key={mode.id}
                         type="button"
-                        onClick={() => setCommuteMode(mode.id as any)}
+                        onClick={() => setCommuteMode(mode.id as keyof typeof DEFAULT_EMISSION_FACTORS.transport)}
                         className={`flex flex-col text-left p-4 rounded-xl border transition-all ${
                           commuteMode === mode.id 
                             ? "border-primary bg-primary/5 ring-1 ring-primary"
@@ -248,7 +246,7 @@ export default function CalculatorPage() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold">Electricity Bill</h2>
-                      <p className="text-sm text-muted-foreground">Estimate your household's average monthly electricity bill.</p>
+                      <p className="text-sm text-muted-foreground">{"Estimate your household's average monthly electricity bill."}</p>
                     </div>
                   </div>
 
@@ -303,7 +301,7 @@ export default function CalculatorPage() {
                       <button
                         key={diet.id}
                         type="button"
-                        onClick={() => setDietType(diet.id as any)}
+                        onClick={() => setDietType(diet.id as keyof typeof DEFAULT_EMISSION_FACTORS.diet)}
                         className={`w-full flex flex-col text-left p-4 rounded-xl border transition-all ${
                           dietType === diet.id 
                             ? "border-primary bg-primary/5 ring-1 ring-primary"

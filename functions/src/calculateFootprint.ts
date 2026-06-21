@@ -18,8 +18,19 @@ export const calculateFootprint = onDocumentWritten("users/{userId}/activities/{
   const activitiesCol = db.collection("users").doc(userId).collection("activities");
   const snapshot = await activitiesCol.get();
   
-  const dailyMap: { [date: string]: any } = {};
-  const weeklyMap: { [weekId: string]: any } = {};
+  const dailyMap: { 
+    [date: string]: {
+      totalCo2eKg: number;
+      byCategory: { [category: string]: number };
+      factorVersion: string;
+    }
+  } = {};
+  const weeklyMap: { 
+    [weekId: string]: {
+      totalCo2eKg: number;
+      byCategory: { [category: string]: number };
+    }
+  } = {};
 
   snapshot.forEach((docSnap) => {
     const act = docSnap.data();

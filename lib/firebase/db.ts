@@ -79,7 +79,12 @@ export function subscribeToMockDb(cb: () => void) {
 // Helper to rebuild aggregates in mock local storage
 function rebuildMockSummaries(userId: string, activities: Activity[]) {
   const dailyMap: { [date: string]: DailySummary } = {};
-  const weeklyMap: { [weekId: string]: { totalCo2eKg: number; byCategory: any } } = {};
+  const weeklyMap: { 
+    [weekId: string]: { 
+      totalCo2eKg: number; 
+      byCategory: { transport: number; electricity: number; cooking: number; diet: number; consumption: number } 
+    } 
+  } = {};
 
   activities.forEach((act) => {
     const loggedDate = new Date(act.loggedAt);
@@ -178,6 +183,7 @@ export async function seedEmissionFactors(): Promise<void> {
     return;
   }
   try {
+    if (!db) throw new Error("Database not initialized");
     const factorsCol = collection(db, "emissionFactors");
     const q = query(factorsCol, limit(1));
     const snapshot = await getDocs(q);
@@ -210,6 +216,7 @@ export async function getLatestEmissionFactors(): Promise<EmissionFactors> {
   try {
     await seedEmissionFactors();
 
+    if (!db) throw new Error("Database not initialized");
     const factorsCol = collection(db, "emissionFactors");
     const q = query(factorsCol, orderBy("effectiveFrom", "desc"), limit(1));
     const snapshot = await getDocs(q);
@@ -244,6 +251,7 @@ export async function saveUserProfile(userId: string, profile: UserProfile): Pro
     notifyMockDbChange();
     return;
   }
+  if (!db) throw new Error("Database not initialized");
   const userRef = doc(db, "users", userId);
   await setDoc(userRef, {
     profile: {
@@ -268,6 +276,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     }
     return null;
   }
+  if (!db) throw new Error("Database not initialized");
   const userRef = doc(db, "users", userId);
   const userSnap = await getDoc(userRef);
   if (userSnap.exists()) {
@@ -303,6 +312,7 @@ export async function addActivity(userId: string, activity: Omit<Activity, "id">
     notifyMockDbChange();
     return actId;
   }
+  if (!db) throw new Error("Database not initialized");
   const activitiesCol = collection(db, "users", userId, "activities");
   const docRef = await addDoc(activitiesCol, {
     ...activity,
@@ -325,6 +335,7 @@ export async function deleteActivity(userId: string, activityId: string): Promis
     notifyMockDbChange();
     return;
   }
+  if (!db) throw new Error("Database not initialized");
   const activityDoc = doc(db, "users", userId, "activities", activityId);
   await deleteDoc(activityDoc);
 }
@@ -341,7 +352,7 @@ export async function getActivities(
     const data = localStorage.getItem(`mock_activities_${userId}`);
     if (!data) return [];
     
-    let activities: Activity[] = JSON.parse(data).map((a: any) => ({
+    let activities: Activity[] = (JSON.parse(data) as Activity[]).map((a: Activity) => ({
       ...a,
       loggedAt: new Date(a.loggedAt)
     }));
@@ -357,6 +368,7 @@ export async function getActivities(
     return activities.sort((a, b) => b.loggedAt.getTime() - a.loggedAt.getTime());
   }
 
+  if (!db) throw new Error("Database not initialized");
   const activitiesCol = collection(db, "users", userId, "activities");
   let q = query(activitiesCol, orderBy("loggedAt", "desc"));
   
@@ -395,6 +407,10 @@ export function subscribeToActivities(
     return subscribeToMockDb(fetchAndCallback);
   }
 
+  if (!db) {
+    console.error("Database not initialized");
+    return () => {};
+  }
   const activitiesCol = collection(db, "users", userId, "activities");
   let q = query(activitiesCol, orderBy("loggedAt", "desc"));
   
@@ -438,6 +454,10 @@ export function subscribeToDailySummaries(
     return subscribeToMockDb(fetchAndCallback);
   }
 
+  if (!db) {
+    console.error("Database not initialized");
+    return () => {};
+  }
   const summariesCol = collection(db, "users", userId, "dailySummaries");
   const q = query(summariesCol, orderBy("__name__", "desc"), limit(30)); // Last 30 days
   
@@ -472,6 +492,10 @@ export function subscribeToWeeklySummaries(
     return subscribeToMockDb(fetchAndCallback);
   }
 
+  if (!db) {
+    console.error("Database not initialized");
+    return () => {};
+  }
   const summariesCol = collection(db, "users", userId, "weeklySummaries");
   const q = query(summariesCol, orderBy("__name__", "desc"), limit(12)); // Last 12 weeks
   

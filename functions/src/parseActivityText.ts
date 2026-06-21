@@ -9,7 +9,7 @@ if (admin.apps.length === 0) {
 /**
  * Callable function that parses natural-language text into structured carbon activities.
  */
-export const parseActivityText = onCall(async (request) => {
+export const parseActivityText = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request) => {
   // Ensure authenticated call
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Authentication is required.");
@@ -72,8 +72,9 @@ User log: "${text}"`;
     const parsedJson = JSON.parse(responseText);
     return { activities: parsedJson.activities };
 
-  } catch (error: any) {
-    console.error("Gemini Cloud Function parse failed:", error);
-    throw new HttpsError("internal", error.message || "Failed to process text parser.");
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Gemini Cloud Function parse failed:", err);
+    throw new HttpsError("internal", err.message || "Failed to process text parser.");
   }
 });

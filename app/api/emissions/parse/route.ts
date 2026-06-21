@@ -76,9 +76,10 @@ Only extract what is explicitly stated or strongly implied. Set reasonable defau
     const parsedJson = JSON.parse(responseText);
     return NextResponse.json({ activities: parsedJson.activities });
 
-  } catch (error: any) {
-    console.error("Gemini parse error:", error);
-    return NextResponse.json({ error: error.message || "Failed to parse text" }, { status: 500 });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Gemini parse error:", err);
+    return NextResponse.json({ error: err.message || "Failed to parse text" }, { status: 500 });
   }
 }
 

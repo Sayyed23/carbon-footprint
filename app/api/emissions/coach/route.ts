@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+interface CoachMessage {
+  role: string;
+  content: string;
+}
+
+interface CoachActivity {
+  category: string;
+  subType: string;
+  quantity: number;
+  unit: string;
+  co2eKg: number;
+}
+
+interface CoachProfile {
+  state?: string;
+  dietType?: string;
+  householdSize?: number;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, activities, profile } = await req.json();
@@ -23,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     // Format recent activities for prompt grounding
     const formattedActivities = activities && Array.isArray(activities) && activities.length > 0
-      ? activities.slice(0, 10).map((a: any) => 
+      ? activities.slice(0, 10).map((a: CoachActivity) => 
           `- Category: ${a.category}, Type: ${a.subType}, Qty: ${a.quantity} ${a.unit}, Impact: ${a.co2eKg} kg CO2e`
         ).join("\n")
       : "No recent activities logged yet.";
@@ -47,7 +66,7 @@ GUIDELINES:
 5. If the user asks about unrelated topics (e.g., programming, gossip, recipes not related to carbon footprint), politely decline to answer, keeping focus strictly on carbon tracking, environment, and climate action.`;
 
     // Map message history to Gemini format (user/model)
-    const chatHistory = messages.slice(0, -1).map((msg: any) => ({
+    const chatHistory = messages.slice(0, -1).map((msg: CoachMessage) => ({
       role: msg.role === "user" ? "user" : "model",
       parts: [{ text: msg.content }]
     }));
@@ -64,13 +83,14 @@ GUIDELINES:
 
     return NextResponse.json({ response: responseText });
 
-  } catch (error: any) {
-    console.error("Carbon Coach API error:", error);
-    return NextResponse.json({ error: error.message || "Failed to generate coaching response" }, { status: 500 });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Carbon Coach API error:", err);
+    return NextResponse.json({ error: err.message || "Failed to generate coaching response" }, { status: 500 });
   }
 }
 
-function mockCoachResponse(messages: any[], activities: any[], profile: any) {
+function mockCoachResponse(messages: CoachMessage[], activities: CoachActivity[], profile: CoachProfile) {
   const lastMsg = messages[messages.length - 1].content.toLowerCase();
   
   if (lastMsg.includes("commute") || lastMsg.includes("travel") || lastMsg.includes("car") || lastMsg.includes("scooter")) {
@@ -80,7 +100,7 @@ function mockCoachResponse(messages: any[], activities: any[], profile: any) {
   if (lastMsg.includes("electricity") || lastMsg.includes("bill") || lastMsg.includes("ac") || lastMsg.includes("power")) {
     return `In ${profile?.state || "Maharashtra"}, the electricity grid emits about 0.74 kg CO2e per kWh (Combined Margin). Reducing your AC run-time by just 2 hours daily can save around 2-3 kWh of energy. Over a month, that reduces your footprint by 45 kg CO2e and lowers your utility bill by ₹300-₹400!`;
   }
-
+  
   if (lastMsg.includes("food") || lastMsg.includes("diet") || lastMsg.includes("veg") || lastMsg.includes("meat")) {
     return `Your diet is currently profile-configured as ${profile?.dietType || "Vegetarian"}. A vegetarian diet averages ~1.6 kg CO2e/day, whereas a vegan diet is ~1.1 kg CO2e/day. Substituting dairy-heavy products like paneer with tofu or plant-based alternatives a couple of times a week is a great way to step down your footprint!`;
   }

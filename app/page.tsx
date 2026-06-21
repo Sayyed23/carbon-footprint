@@ -85,7 +85,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold mb-2">Conversational Logging</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  No tedious spreadsheets. Simply type or record in plain Hinglish: <i>"Rode my scooter for 12 km and ate veg thali."</i> Gemini parses it instantly into activities.
+                  No tedious spreadsheets. Simply type or record in plain Hinglish: <i>&quot;Rode my scooter for 12 km and ate veg thali.&quot;</i> Gemini parses it instantly into activities.
                 </p>
               </div>
             </div>

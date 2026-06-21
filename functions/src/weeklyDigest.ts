@@ -11,7 +11,7 @@ const db = admin.firestore();
  * Scheduled function running every Sunday at 9 AM IST.
  * Compiles weekly analytics, updates leaderboards, and logs scheduled tasks.
  */
-export const weeklyDigest = onSchedule("0 9 * * 0", async (event) => {
+export const weeklyDigest = onSchedule("0 9 * * 0", async () => {
   console.log("Starting scheduled weekly carbon digest analysis...");
 
   try {

@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "ecotrace-dev",
-    "dev": "ecotrace-dev",
+    "default": "chicha-380b1",
+    "dev": "chicha-380b1",
     "staging": "ecotrace-staging",
     "prod": "ecotrace-prod"
   }

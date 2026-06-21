@@ -9,7 +9,7 @@ if (admin.apps.length === 0) {
 /**
  * Callable function that triggers Gemini Vision to OCR and extract billing data.
  */
-export const parseUtilityBill = onCall(async (request) => {
+export const parseUtilityBill = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Authentication is required.");
   }
@@ -64,8 +64,9 @@ Extract the following structured data from this electricity bill photo:
     const parsedJson = JSON.parse(responseText);
     return { data: parsedJson };
 
-  } catch (error: any) {
-    console.error("Gemini Vision OCR Cloud Function failed:", error);
-    throw new HttpsError("internal", error.message || "Failed to process bill image scanner.");
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Gemini Vision OCR Cloud Function failed:", err);
+    throw new HttpsError("internal", err.message || "Failed to process bill image scanner.");
   }
 });

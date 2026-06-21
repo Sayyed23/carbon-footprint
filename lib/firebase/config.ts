@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator, Firestore } from "firebase/firestore";
+import { getStorage, connectStorageEmulator, FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,10 +19,10 @@ export let isMockMode = typeof window !== "undefined" && (
   firebaseConfig.apiKey.includes("FakeKey")
 );
 
-let app: any = null;
-let auth: any = null;
-let db: any = null;
-let storage: any = null;
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
 
 if (typeof window !== "undefined" && !isMockMode) {
   try {
@@ -32,8 +32,8 @@ if (typeof window !== "undefined" && !isMockMode) {
     storage = getStorage(app);
 
     const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === "true";
-    if (useEmulators && !(auth as any)._emulatorActivated) {
-      (auth as any)._emulatorActivated = true;
+    if (useEmulators && !(auth as unknown as { _emulatorActivated?: boolean })._emulatorActivated) {
+      (auth as unknown as { _emulatorActivated?: boolean })._emulatorActivated = true;
       const host = "127.0.0.1";
       connectAuthEmulator(auth, `http://${host}:9099`, { disableWarnings: true });
       connectFirestoreEmulator(db, host, 8080);

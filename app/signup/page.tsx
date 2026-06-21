@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { signUpUser, signInWithGoogle } from "@/lib/firebase/authService";
@@ -9,9 +9,24 @@ import { saveUserProfile, addActivity, UserProfile } from "@/lib/firebase/db";
 import { Leaf, Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, MapPin, Utensils, Users } from "lucide-react";
 import { DEFAULT_EMISSION_FACTORS } from "@/lib/emissions/engine";
 
+interface GuestCalculations {
+  state: string;
+  commuteMode: keyof typeof DEFAULT_EMISSION_FACTORS.transport;
+  commuteDistance: number;
+  electricityBill: number;
+  dietType: UserProfile["dietType"];
+  householdSize: number;
+  calculatedResults: {
+    transport: number;
+    electricity: number;
+    diet: number;
+    cooking: number;
+    total: number;
+  };
+}
+
 function SignUpForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   // Account Form State
   const [email, setEmail] = useState("");
@@ -25,7 +40,7 @@ function SignUpForm() {
   const [householdSize, setHouseholdSize] = useState(4);
   
   const [hasGuestData, setHasGuestData] = useState(false);
-  const [guestData, setGuestData] = useState<any>(null);
+  const [guestData, setGuestData] = useState<GuestCalculations | null>(null);
 
   const statesList = Object.keys(DEFAULT_EMISSION_FACTORS.electricity.byState).sort();
 
@@ -33,8 +48,9 @@ function SignUpForm() {
     // Check if guest calculation data is stored
     const data = sessionStorage.getItem("guestCalculations");
     if (data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasGuestData(true);
-      setGuestData(JSON.parse(data));
+      setGuestData(JSON.parse(data) as GuestCalculations);
     }
   }, []);
 
@@ -57,12 +73,13 @@ function SignUpForm() {
       const uid = userCredential.user.uid;
       await initializeUserProfileAndData(uid);
       router.push("/dashboard");
-    } catch (err: any) {
-      console.error("Signup error:", err);
-      if (err.code === "auth/email-already-in-use") {
+    } catch (err: unknown) {
+      const error = err as Error & { code?: string };
+      console.error("Signup error:", error);
+      if (error.code === "auth/email-already-in-use") {
         setError("This email address is already registered.");
       } else {
-        setError(err.message || "An error occurred during registration.");
+        setError(error.message || "An error occurred during registration.");
       }
       setLoading(false);
     }
@@ -76,9 +93,10 @@ function SignUpForm() {
       const uid = result.user.uid;
       await initializeUserProfileAndData(uid);
       router.push("/dashboard");
-    } catch (err: any) {
-      console.error("Google signin error:", err);
-      setError(err.message || "Google Sign-In failed.");
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Google signin error:", error);
+      setError(error.message || "Google Sign-In failed.");
       setLoading(false);
     }
   };
@@ -254,7 +272,7 @@ function SignUpForm() {
               <select
                 id="pdiet"
                 value={dietType}
-                onChange={(e) => setDietType(e.target.value as any)}
+                onChange={(e) => setDietType(e.target.value as UserProfile["dietType"])}
                 className="w-full bg-card border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="vegan">Vegan</option>
@@ -282,7 +300,7 @@ function SignUpForm() {
           </div>
         )}
 
-        {hasGuestData && (
+        {hasGuestData && guestData && (
           <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex items-start gap-2.5 text-xs text-muted-foreground">
             <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <p>

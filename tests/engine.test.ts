@@ -6,8 +6,7 @@ import {
   calculateElectricityEmissions, 
   calculateCookingEmissions, 
   calculateDietEmissions, 
-  calculateConsumptionEmissions,
-  DEFAULT_EMISSION_FACTORS 
+  calculateConsumptionEmissions
 } from "../lib/emissions/engine";
 
 test("Emission Factor Engine - Grid Factors", () => {

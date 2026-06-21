@@ -27,12 +27,13 @@ export default function SignInPage() {
     try {
       await signInUser(email, password);
       router.push("/dashboard");
-    } catch (err: any) {
-      console.error("Login error:", err);
-      if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+    } catch (err: unknown) {
+      const error = err as Error & { code?: string };
+      console.error("Login error:", error);
+      if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
         setError("Invalid email address or password.");
       } else {
-        setError(err.message || "An error occurred during authentication.");
+        setError(error.message || "An error occurred during authentication.");
       }
       setLoading(false);
     }
@@ -44,9 +45,10 @@ export default function SignInPage() {
     try {
       await signInWithGoogle();
       router.push("/dashboard");
-    } catch (err: any) {
-      console.error("Google login error:", err);
-      setError(err.message || "Google Sign-In failed.");
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Google login error:", error);
+      setError(error.message || "Google Sign-In failed.");
       setLoading(false);
     }
   };
@@ -144,9 +146,8 @@ export default function SignInPage() {
             <span>Google Account</span>
           </button>
 
-          {/* Redirect to Register */}
           <div className="text-center mt-6 text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/signup" className="font-semibold text-primary hover:underline">
               Create one now
             </Link>

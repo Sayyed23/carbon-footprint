@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   subscribeToActivities, 
@@ -21,7 +21,7 @@ export function useUserActivities(userId: string | undefined, startDate?: Date, 
   
   // Date range keys represented in ISO string for cache key serialization
   const dateKey = `${startDate?.toISOString() || "all"}_${endDate?.toISOString() || "all"}`;
-  const queryKey = ["activities", userId, dateKey];
+  const queryKey = useMemo(() => ["activities", userId, dateKey], [userId, dateKey]);
 
   const query = useQuery<Activity[]>({
     queryKey,
@@ -39,7 +39,7 @@ export function useUserActivities(userId: string | undefined, startDate?: Date, 
     });
 
     return () => unsubscribe();
-  }, [userId, startDate, endDate, queryClient, dateKey]);
+  }, [userId, startDate, endDate, queryClient, dateKey, queryKey]);
 
   return query;
 }
@@ -49,7 +49,7 @@ export function useUserActivities(userId: string | undefined, startDate?: Date, 
  */
 export function useUserDailySummaries(userId: string | undefined) {
   const queryClient = useQueryClient();
-  const queryKey = ["dailySummaries", userId];
+  const queryKey = useMemo(() => ["dailySummaries", userId], [userId]);
 
   const query = useQuery<DailySummary[]>({
     queryKey,
@@ -65,7 +65,7 @@ export function useUserDailySummaries(userId: string | undefined) {
     });
 
     return () => unsubscribe();
-  }, [userId, queryClient]);
+  }, [userId, queryClient, queryKey]);
 
   return query;
 }
@@ -75,7 +75,7 @@ export function useUserDailySummaries(userId: string | undefined) {
  */
 export function useUserWeeklySummaries(userId: string | undefined) {
   const queryClient = useQueryClient();
-  const queryKey = ["weeklySummaries", userId];
+  const queryKey = useMemo(() => ["weeklySummaries", userId], [userId]);
 
   const query = useQuery<WeeklySummary[]>({
     queryKey,
@@ -91,7 +91,7 @@ export function useUserWeeklySummaries(userId: string | undefined) {
     });
 
     return () => unsubscribe();
-  }, [userId, queryClient]);
+  }, [userId, queryClient, queryKey]);
 
   return query;
 }
