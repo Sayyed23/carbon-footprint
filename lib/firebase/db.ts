@@ -167,6 +167,15 @@ function rebuildMockSummaries(userId: string, activities: Activity[]) {
     JSON.stringify(weeklySummaries)
   );
 }
+function cleanUndefinedFields<T extends object>(obj: T): T {
+  const cleaned = { ...obj } as Record<string, unknown>;
+  Object.keys(cleaned).forEach((key) => {
+    if (cleaned[key] === undefined) {
+      delete cleaned[key];
+    }
+  });
+  return cleaned as unknown as T;
+}
 
 // ----------------------------------------------------
 // Database Operations (Firebase & Mock switch)
@@ -253,10 +262,11 @@ export async function saveUserProfile(userId: string, profile: UserProfile): Pro
   }
   if (!db) throw new Error("Database not initialized");
   const userRef = doc(db, "users", userId);
+  const cleanProfile = cleanUndefinedFields(profile);
   await setDoc(userRef, {
     profile: {
-      ...profile,
-      createdAt: Timestamp.fromDate(profile.createdAt)
+      ...cleanProfile,
+      createdAt: Timestamp.fromDate(cleanProfile.createdAt)
     }
   }, { merge: true });
 }
@@ -314,9 +324,10 @@ export async function addActivity(userId: string, activity: Omit<Activity, "id">
   }
   if (!db) throw new Error("Database not initialized");
   const activitiesCol = collection(db, "users", userId, "activities");
+  const cleanActivity = cleanUndefinedFields(activity);
   const docRef = await addDoc(activitiesCol, {
-    ...activity,
-    loggedAt: Timestamp.fromDate(activity.loggedAt)
+    ...cleanActivity,
+    loggedAt: Timestamp.fromDate(cleanActivity.loggedAt)
   });
   return docRef.id;
 }

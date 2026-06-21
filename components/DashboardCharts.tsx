@@ -81,7 +81,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
       <div className="glass p-6 rounded-2xl border border-border shadow-sm">
         <h3 className="text-lg font-bold mb-4">Carbon Split by Category</h3>
         <div className="h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <BarChart data={sortedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -118,7 +118,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
       <div className="glass p-6 rounded-2xl border border-border shadow-sm">
         <h3 className="text-lg font-bold mb-4">Daily Emissions Trend</h3>
         <div className="h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
             <LineChart data={sortedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
