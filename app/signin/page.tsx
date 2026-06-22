@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { signInUser, signInWithGoogle } from "@/lib/firebase/authService";
 import { Leaf, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { isValidEmail, sanitizeTextInput } from "@/lib/validation";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -37,8 +38,13 @@ export default function SignInPage() {
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+    const cleanEmail = sanitizeTextInput(email);
+    if (!cleanEmail || !password) {
       setError("Please enter both email and password.");
+      return;
+    }
+    if (!isValidEmail(cleanEmail)) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -46,7 +52,7 @@ export default function SignInPage() {
     setError(null);
 
     try {
-      await signInUser(email, password);
+      await signInUser(cleanEmail, password);
       router.push("/dashboard");
     } catch (err: unknown) {
       const error = err as Error & { code?: string };
@@ -88,7 +94,7 @@ export default function SignInPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <main id="main-content" className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md glass p-8 rounded-3xl shadow-xl relative overflow-hidden">
           {/* Decorative glow */}
           <div className="absolute -top-12 -left-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
@@ -105,7 +111,7 @@ export default function SignInPage() {
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl flex items-center gap-2 text-sm font-medium">
+            <div role="alert" aria-live="polite" className="mb-4 p-3 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl flex items-center gap-2 text-sm font-medium">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -159,6 +165,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
+              aria-busy={loading}
               className="w-full bg-primary text-primary-foreground py-2.5 rounded-full text-sm font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-6"
             >
               <span>{loading ? "Signing In..." : "Sign In"}</span>
@@ -181,7 +188,7 @@ export default function SignInPage() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 border border-border bg-card hover:bg-muted py-2.5 rounded-full text-sm font-semibold transition-colors"
           >
-            <svg className="h-4 w-4" viewBox="0 0 24 24">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="#EA4335"
                 d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.94 5.94 0 0 1 8 12.63a5.94 5.94 0 0 1 5.99-5.89c1.55 0 2.96.59 4.05 1.556l3.076-3.078A10.02 10.02 0 0 0 13.99 2C8.47 2 4 6.47 4 12s4.47 10 9.99 10c5.77 0 9.77-4.06 9.77-9.93 0-.618-.052-1.22-.153-1.785H12.24z"

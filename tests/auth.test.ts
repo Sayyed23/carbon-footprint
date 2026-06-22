@@ -116,3 +116,44 @@ test("Auth Service Mock Mode - Logout", async () => {
   const current = localStorage.getItem("mock_current_user");
   assert.strictEqual(current, null);
 });
+
+test("Auth Service Mock Mode - Google Sign In", async () => {
+  const { signInWithGoogle } = await import("../lib/firebase/authService");
+  localStorage.clear();
+
+  const cred = await signInWithGoogle();
+  assert.strictEqual(cred.user.uid, "usr_google_mock");
+  assert.strictEqual(cred.user.email, "google_user@gmail.com");
+
+  const currentRaw = localStorage.getItem("mock_current_user");
+  assert.ok(currentRaw);
+  const currentUser = JSON.parse(currentRaw);
+  assert.strictEqual(currentUser.uid, "usr_google_mock");
+});
+
+test("Auth Service Mock Mode - throws error when window is undefined", async () => {
+  const { signUpUser, signInUser, signInWithGoogle, logoutUser } = await import("../lib/firebase/authService");
+
+  const originalWindow = global.window;
+  // @ts-expect-error - deleting window to simulate non-browser
+  delete global.window;
+
+  await assert.rejects(async () => {
+    await signUpUser("test@example.com", "password");
+  }, /Window is undefined/);
+
+  await assert.rejects(async () => {
+    await signInUser("test@example.com", "password");
+  }, /Window is undefined/);
+
+  await assert.rejects(async () => {
+    await signInWithGoogle();
+  }, /Window is undefined/);
+
+  // Logout should complete without throwing if window is undefined, just returning early
+  await logoutUser();
+
+  global.window = originalWindow;
+});
+
+

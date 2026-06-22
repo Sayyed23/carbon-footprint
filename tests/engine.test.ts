@@ -135,3 +135,61 @@ test("Emission Factor Engine - Boundary and Edge Cases", () => {
     0
   );
 });
+
+test("Emission Factor Engine - Custom Emission Factors", () => {
+  const customFactors = {
+    ...DEFAULT_EMISSION_FACTORS,
+    transport: {
+      ...DEFAULT_EMISSION_FACTORS.transport,
+      "4w_petrol": 0.5,
+    },
+    electricity: {
+      ...DEFAULT_EMISSION_FACTORS.electricity,
+      default: 1.0,
+      byRegion: {
+        western: 2.0,
+        eastern: 1.5,
+        southern: 1.2,
+        northern: 1.1,
+        northeastern: 0.9,
+      },
+    },
+    cooking: {
+      ...DEFAULT_EMISSION_FACTORS.cooking,
+      lpg_cylinder: 10.0,
+      electric_kwh: 1.0,
+    },
+    diet: {
+      ...DEFAULT_EMISSION_FACTORS.diet,
+      vegan: 2.0,
+    },
+    consumption: {
+      ...DEFAULT_EMISSION_FACTORS.consumption,
+      delivery_order: 3.0,
+    },
+  };
+
+  // getGridFactor with custom factors
+  assert.strictEqual(getGridFactor("Maharashtra", customFactors), 2.0);
+  assert.strictEqual(getGridFactor("Unknown State", customFactors), 1.0);
+
+  // calculateTransportEmissions with custom factors
+  assert.strictEqual(calculateTransportEmissions("4w_petrol", 10, customFactors), 5.0);
+
+  // calculateElectricityEmissions with custom factors
+  assert.strictEqual(calculateElectricityEmissions(10, "Maharashtra", customFactors), 20.0);
+
+  // calculateCookingEmissions with custom factors (electric_kwh)
+  assert.strictEqual(calculateCookingEmissions("electric_kwh", 10, "Maharashtra", customFactors), 20.0);
+  assert.strictEqual(calculateCookingEmissions("electric_kwh", 10, undefined, customFactors), 10.0);
+
+  // calculateCookingEmissions with custom factors (non-electric)
+  assert.strictEqual(calculateCookingEmissions("lpg_cylinder", 2, undefined, customFactors), 20.0);
+
+  // calculateDietEmissions with custom factors
+  assert.strictEqual(calculateDietEmissions("vegan", 5, customFactors), 10.0);
+
+  // calculateConsumptionEmissions with custom factors
+  assert.strictEqual(calculateConsumptionEmissions("delivery_order", 2, customFactors), 6.0);
+});
+

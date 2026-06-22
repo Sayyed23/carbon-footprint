@@ -130,7 +130,7 @@ export default function CalculatorPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 flex flex-col justify-center">
+      <main id="main-content" className="flex-1 max-w-4xl mx-auto w-full px-4 py-12 flex flex-col justify-center">
         {!calculated ? (
           <div className="w-full max-w-xl mx-auto">
             {/* Header */}
@@ -147,7 +147,14 @@ export default function CalculatorPage() {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-secondary h-2 rounded-full overflow-hidden mb-8">
+            <div
+              role="progressbar"
+              aria-valuenow={step}
+              aria-valuemin={1}
+              aria-valuemax={totalSteps}
+              aria-label={`Step ${step} of ${totalSteps}`}
+              className="w-full bg-secondary h-2 rounded-full overflow-hidden mb-8"
+            >
               <div
                 className="bg-primary h-full transition-all duration-300 ease-out"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
@@ -244,6 +251,7 @@ export default function CalculatorPage() {
                       <span className="text-primary">{commuteDistance} km</span>
                     </div>
                     <input
+                      id="commute-distance-range"
                       type="range"
                       min="5"
                       max="500"
@@ -251,6 +259,7 @@ export default function CalculatorPage() {
                       value={commuteDistance}
                       onChange={(e) => setCommuteDistance(Number(e.target.value))}
                       className="w-full accent-primary bg-secondary h-2 rounded-lg cursor-pointer"
+                      aria-label="Weekly Travel Distance in kilometers"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>5 km</span>
@@ -281,6 +290,7 @@ export default function CalculatorPage() {
                       <span className="text-primary">₹ {electricityBill}</span>
                     </div>
                     <input
+                      id="electricity-bill-range"
                       type="range"
                       min="300"
                       max="10000"
@@ -288,6 +298,7 @@ export default function CalculatorPage() {
                       value={electricityBill}
                       onChange={(e) => setElectricityBill(Number(e.target.value))}
                       className="w-full accent-primary bg-secondary h-2 rounded-lg cursor-pointer"
+                      aria-label="Monthly Electricity Bill in Rupees"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>₹ 300</span>

@@ -19,7 +19,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <header className="relative overflow-hidden pt-20 pb-16 sm:pb-24 lg:pt-32 lg:pb-32">
+      <header id="main-content" className="relative overflow-hidden pt-20 pb-16 sm:pb-24 lg:pt-32 lg:pb-32">
         {/* Abstract Glowing Accent */}
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute bottom-10 left-1/4 w-[300px] h-[300px] bg-secondary/20 rounded-full blur-2xl pointer-events-none -z-10" />
